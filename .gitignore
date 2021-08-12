@@ -1,0 +1,22 @@
+# ignore /x64/*.* 
+x64/
+x64/*.*
+
+# ignore /Debug
+Debug/
+Debug/*.*
+
+# ignore /ogl_3d_pratice/x64
+ogl_3d_pratice/x64/
+ogl_3d_pratice/x64/*.*
+
+# ignore /ogl_3d_pratice/Debug
+ogl_3d_pratice/Debug/
+ogl_3d_pratice/Debug/*.*
+
+.git/*.*
+.git/
+
+.vs/*.*
+.vs/
+
