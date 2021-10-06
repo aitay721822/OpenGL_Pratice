@@ -1,5 +1,4 @@
 #include "shader_loader.h"
-#include "shader_utils.h"
 
 Shader::Shader(const char* vertexPath, const char* fragmentPath)
 {
@@ -40,9 +39,12 @@ Shader::Shader(const char* vertexPath, const char* fragmentPath)
     link_shader_program(vertex, fragment, this->program);
 }
 
-void Shader::Use()
-{
+void Shader::Use() {
 	glUseProgram(this->program);
+}
+
+void Shader::Unuse() {
+    glUseProgram(0);
 }
 
 void Shader::compile_shaders(const char* shaderSource, GLint mode, GLuint& output_shader) {
@@ -78,4 +80,46 @@ void Shader::link_shader_program(GLuint& vertexShader, GLuint& fragmentShader, G
     }
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
+}
+
+void Shader::set1i(const std::string& name, int value) {
+    this->Use();
+    glUniform1i(glGetUniformLocation(this->program, name.c_str()), value);
+    this->Unuse();
+}
+
+void Shader::set1f(const std::string& name, float value) {
+    this->Use();
+    glUniform1f(glGetUniformLocation(this->program, name.c_str()), value);
+    this->Unuse();
+}
+
+void Shader::setVec2f(const std::string& name, glm::vec2 value) {
+    this->Use();
+    glUniform2fv(glGetUniformLocation(this->program, name.c_str()), 1, glm::value_ptr(value));
+    this->Unuse();
+}
+
+void Shader::setVec3f(const std::string& name, glm::vec3 value) {
+    this->Use();
+    glUniform3fv(glGetUniformLocation(this->program, name.c_str()), 1, glm::value_ptr(value));
+    this->Unuse();
+}
+
+void Shader::setVec4f(const std::string& name, glm::vec4 value) {
+    this->Use();
+    glUniform4fv(glGetUniformLocation(this->program, name.c_str()), 1, glm::value_ptr(value));
+    this->Unuse();
+}
+
+void Shader::setMat3fv(const std::string& name, glm::mat3 value, GLboolean transpose) {
+    this->Use();
+    glUniformMatrix3fv(glGetUniformLocation(this->program, name.c_str()), 1, transpose, glm::value_ptr(value));
+    this->Unuse();
+}
+
+void Shader::setMat4fv(const std::string& name, glm::mat4 value, GLboolean transpose) {
+    this->Use();
+    glUniformMatrix4fv(glGetUniformLocation(this->program, name.c_str()), 1, transpose, glm::value_ptr(value));
+    this->Unuse();
 }

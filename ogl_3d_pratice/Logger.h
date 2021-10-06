@@ -1,6 +1,5 @@
 #pragma once
-#ifndef LOGGER_H
-#define LOGGER_H
+
 #include <string>
 #include <stdarg.h>
 #include <ctime>
@@ -83,4 +82,3 @@ private:
 		return std::string(buf);
 	}
 };
-#endif

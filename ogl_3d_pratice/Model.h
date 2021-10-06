@@ -1,5 +1,4 @@
-#ifndef MODEL_H
-#define MODEL_H
+#pragma once
 
 #include <vector>
 #include <iostream>
@@ -7,25 +6,64 @@
 #include <sstream>
 #include <map>
 #include <string>
-
-#include <glm/glm.hpp>
-#include <GL/glew.h>
-#include <glm/gtc/matrix_transform.hpp>
-// use stb instead
-#define STB_IMAGE_IMPLEMENTATION
-#include "stb/stb_image.h"
-//#include <SOIL2/SOIL2.h>
+#include <SOIL2/SOIL2.h>
+// assimp
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+// glm
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+// glew
+#include <GL/glew.h>
+
+// glfw
+#include <GLFW/glfw3.h>
 #include "Mesh.h"
 #include "Constants.h"
 #include "Logger.h"
 
 using namespace std;
 
-GLuint TextureFromFile(const char* path, string directory);
+static GLuint TextureFromFile(const char* path, string directory) {
+	string fullname = string(path);
+	fullname = directory + '/' + fullname;
+	// gen texture ID
+	GLuint textureId;
+	glGenTextures(1, &textureId);
+
+	int w, h;
+	unsigned char* image = SOIL_load_image(
+		fullname.c_str(),
+		&w, &h, NULL, SOIL_LOAD_RGBA
+	);
+	if (image) {
+		//GLenum format = GL_RGB;
+		//if (nrComponents == 1)
+		//	format = GL_RED;
+		//else if (nrComponents == 3)
+		//	format = GL_RGB;
+		//else if (nrComponents == 4)
+		//	format = GL_RGBA;
+
+		GLenum format = GL_RGBA;
+		glBindTexture(GL_TEXTURE_2D, textureId);
+		glTexImage2D(GL_TEXTURE_2D, 0, format, w, h, 0,
+			format, GL_UNSIGNED_BYTE, image);
+		glGenerateMipmap(GL_TEXTURE_2D);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+	SOIL_free_image_data(image);
+	return textureId;
+}
 
 class Model {
 public:
@@ -34,13 +72,12 @@ public:
 	}
 
 	void Draw(Shader shader) {
+		shader.Use();
 		for (GLuint i = 0; i < this->meshes.size(); i++) {
 			this->meshes[i].Draw(shader);
 		}
+		shader.Unuse();
 	}
-
-	//std::vector<glm::vec3> get_vertices();
-	//std::vector<unsigned int> get_indices();
 private:
 	Logger* logger = new Logger("Model", config_debug);
 	vector<Mesh> meshes;
@@ -93,31 +130,30 @@ private:
 				);
 			}
 			if (mesh->mTextureCoords[0]) {
+				// texture coordinates
 				vtx.TexCoords = glm::vec2(
 					mesh->mTextureCoords[0][i].x,
 					mesh->mTextureCoords[0][i].y
 				);
+				// tangent
+				if (mesh->mTangents) {
+					vtx.Tangent = glm::vec3(
+						mesh->mTangents[i].x,
+						mesh->mTangents[i].y,
+						mesh->mTangents[i].z
+					);
+				}
+				// Bitangent
+				if (mesh->mBitangents) {
+					vtx.Bitangent = glm::vec3(
+						mesh->mBitangents[i].x,
+						mesh->mBitangents[i].y,
+						mesh->mBitangents[i].z
+					);
+				}
 			}
 			else {
 				vtx.TexCoords = glm::vec2(0.0f, 0.0f);
-			}
-
-			// tangent
-			if (mesh->mTangents) {
-				vtx.Tangent = glm::vec3(
-					mesh->mTangents[i].x,
-					mesh->mTangents[i].y,
-					mesh->mTangents[i].z
-				);
-			}
-
-			// Bitangent
-			if (mesh->mBitangents) {
-				vtx.Bitangent = glm::vec3(
-					mesh->mBitangents[i].x,
-					mesh->mBitangents[i].y, 
-					mesh->mBitangents[i].z
-				);
 			}
 			vertices.push_back(vtx);
 		}
@@ -140,6 +176,9 @@ private:
 		mat.Kd = glm::vec4(color.r, color.g, color.b, 1.0);
 		material->Get(AI_MATKEY_COLOR_SPECULAR, color);
 		mat.Ks = glm::vec4(color.r, color.g, color.b, 1.0);
+		float shininess;
+		material->Get(AI_MATKEY_SHININESS, shininess);
+		mat.Shininess = shininess;
 
 		vector<Texture> diffuseMaps = this->loadMaterialTextures(
 			material,
@@ -155,7 +194,7 @@ private:
 		);
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 
-		// because assimp aiTextureType_NORMAL doesn't load its normal maps while aiTextureType_HEIGHT does...
+		// because assimp aiTextureType_NORMAL doesn't load its normal maps but aiTextureType_HEIGHT does...
 		vector<Texture> normalMaps = this->loadMaterialTextures(
 			material,
 			aiTextureType_HEIGHT,
@@ -204,45 +243,3 @@ private:
 		return textures;
 	}
 };
-
-GLuint TextureFromFile(const char* path, string directory) {
-	string fullname = string(path);
-	fullname = directory + '/' + fullname;
-	// gen texture ID
-	GLuint textureId;
-	glGenTextures(1, &textureId);
-
-	int w, h, nrComponents;
-	unsigned char* image = stbi_load(
-		fullname.c_str(),
-		&w, &h, &nrComponents, 0
-	);
-	if (image) {
-		GLenum format = GL_RGB;
-		if (nrComponents == 1)
-			format = GL_RED;
-		else if (nrComponents == 3)
-			format = GL_RGB;
-		else if (nrComponents == 4)
-			format = GL_RGBA;
-
-		glBindTexture(GL_TEXTURE_2D, textureId);
-		glTexImage2D(GL_TEXTURE_2D, 0, format, w, h, 0,
-			format, GL_UNSIGNED_BYTE, image);
-		glGenerateMipmap(GL_TEXTURE_2D);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-		glBindTexture(GL_TEXTURE_2D, 0);
-	}
-	stbi_image_free(image);
-	return textureId;
-}
-
-
-
-
-#endif 

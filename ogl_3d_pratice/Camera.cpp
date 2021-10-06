@@ -1,20 +1,9 @@
 #include "Camera.h"
-#include <iostream>
 
-Camera::Camera(glm::vec3 position, glm::vec3 up) 
-	: MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
+Camera::Camera(glm::vec3 position, glm::vec3 up, 
+	float near, float far, float zoom) : MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(zoom), Far(far), Near(near)
 {
 	Position = position;
-	Orientation = glm::quat(0, 0, 0, -1);
-	RightAngle = 0.f;
-	UpAngle = 0.f;
-	updateCameraVectors();
-}
-
-Camera::Camera(float posX, float posY, float posZ, float upX, float upY, float upZ)
-	: MovementSpeed(SPEED), MouseSensitivity(SENSITIVITY), Zoom(ZOOM)
-{
-	Position = glm::vec3(posX, posY, posZ);
 	Orientation = glm::quat(0, 0, 0, -1);
 	RightAngle = 0.f;
 	UpAngle = 0.f;

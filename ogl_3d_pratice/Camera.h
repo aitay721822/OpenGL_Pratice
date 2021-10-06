@@ -1,13 +1,9 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#pragma once
 
-#include <GL/glew.h>
+#include <iostream>
 #include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtc/quaternion.hpp>
 #include <glm/gtx/quaternion.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 enum class CameraDirection
 {
@@ -24,8 +20,7 @@ const float ZOOM = 45.0f;
 class Camera
 {
 public:
-	
-	
+
 	glm::vec3 Position;
 	glm::quat Orientation;
 	float RightAngle;
@@ -34,13 +29,16 @@ public:
 	float MovementSpeed;
 	float MouseSensitivity;
 	float Zoom;
+	float Near;
+	float Far;
 
-	Camera
-	(
+	Camera(
 		glm::vec3 position = glm::vec3(0.f, 0.f, 0.f),
-		glm::vec3 up = glm::vec3(0.f, 1.0f, 0.f)
+		glm::vec3 up = glm::vec3(0.f, 1.0f, 0.f),
+		float near = 0.1f,
+		float far = 1000.f,
+		float zoom = 45.0f
 	);
-	Camera(float posX, float posY, float posZ, float upX, float upY, float upZ);
 
 	glm::mat4 GetViewMatrix();
 	void ProcessKeyboard(CameraDirection direction, float deltaTime);
@@ -50,5 +48,3 @@ public:
 private:
 	void updateCameraVectors();
 };
-
-#endif
