@@ -248,12 +248,42 @@ double Game::getFPS() {
 void Game::initLights() {
 	this->initDirectionLights();
 	this->initPointLights();
-}
-
-void Game::initPointLights()  {
-	this->lights.push_back(new PointLight(glm::vec3(0.f, 10.f, 0.f), glm::vec3(1.f, 0.0f, 0.f), 0.5f));
+	this->initSpotLights();
 }
 
 void Game::initDirectionLights() {
 	this->lights.push_back(new DirectionLight(glm::vec3(0.f, 10.f, 50.f), 0.8f, 0.8f, 0.8f));
+}
+
+void Game::initPointLights() {
+	//PointLight* pt = new PointLight(glm::vec3(0.f, 10.f, 0.f), glm::vec3(1.f, 0.0f, 0.f), 0.5f);
+	PointLight* pt = new PointLight(
+		camera->Position, 
+		glm::vec3(1.f, 0.0f, 0.f), 
+		1.f
+	);
+	pt->setBeforeRenderHooks([this](PointLight* it) {
+		it->setPosition(this->CameraGetPosition());
+	});
+	this->lights.push_back(pt);
+}
+
+void Game::initSpotLights() {
+	SpotLight* sp = new SpotLight(
+		camera->Position,  // position
+		glm::vec3(0.f, 0.f, -1.f), // direction
+		glm::cos(glm::radians(12.5f)), // cutoff
+		glm::vec3(1.f),
+		0.5f
+	);
+	
+	//sp->setBeforeRenderHooks([this](SpotLight *it) {
+	//	it->setPosition(this->CameraGetPosition());
+	//});
+
+	this->lights.push_back(sp);
+} 
+
+glm::vec3 Game::CameraGetPosition() {
+	return this->camera->Position;
 }

@@ -2,6 +2,7 @@
 
 #include <glm/glm.hpp>
 #include "shader_loader.h"
+#include <functional>
 
  class Light {
 protected:
@@ -42,7 +43,7 @@ public:
 		this->direction = direction;
 	}
 	
-	void AssignToShader(Shader& shader) {
+	void AssignToShader(Shader& shader) override {
 		shader.setVec3f("dirLight.direction", direction);
 		shader.setVec3f("dirLight.baselight.color", color);
 		shader.set1f("dirLight.baselight.ambientIntensity", AmbientIntensity);
@@ -51,12 +52,14 @@ public:
 	}
 };
 
+// 點光源
 class PointLight : public Light {
 protected:
 	glm::vec3 position;
 	float constant, linear, quadratic;
 public:
-	
+	typedef function<void(PointLight*)> BeforeRenderHooks;
+
 	PointLight(glm::vec3 position, 
 		glm::vec3 color = glm::vec3(1.f),
 		float intensity = 1.f, 
@@ -68,6 +71,8 @@ public:
 		this->constant = constant;
 		this->linear = linear;
 		this->quadratic = quadratic;
+
+		this->beforeRenderHooks = nullptr;
 	}
 
 	~PointLight() {}
@@ -76,7 +81,15 @@ public:
 		this->position = position;
 	}
 
-	void AssignToShader(Shader& shader) {
+	void setBeforeRenderHooks(BeforeRenderHooks fn) {
+		this->beforeRenderHooks = fn;
+	}
+
+	void AssignToShader(Shader& shader) override {
+		
+		if (beforeRenderHooks != nullptr) 
+			beforeRenderHooks(this);
+
 		shader.setVec3f("pointlight.position", position);
 
 		shader.setVec3f("pointlight.baselight.color", color);
@@ -88,6 +101,68 @@ public:
 		shader.set1f("pointlight.linear", linear);
 		shader.set1f("pointlight.quadratic", quadratic);
 	}
+private:
+	BeforeRenderHooks beforeRenderHooks; // Usually executed before rendering lights
 };
 
+// 聚光光源
+class SpotLight : public PointLight {
+protected:
+	glm::vec3 direction;
+	float cutoff;
+public:
+	typedef function<void(SpotLight*)> BeforeRenderHooks;
 
+	SpotLight(glm::vec3 position,
+		glm::vec3 direction,
+		float cutoff,
+		glm::vec3 color = glm::vec3(1.f),
+		float intensity = 1.f,
+		float constant = 1.f,
+		float linear = 0.09f,
+		float quadratic = 0.032f
+	) : PointLight(position, color, intensity, constant, linear, quadratic) {
+		this->direction = direction;
+		this->cutoff = cutoff;
+		this->beforeRenderHooks = nullptr;
+	}
+
+	~SpotLight(){}
+	
+	// before render hooks
+	void setBeforeRenderHooks(BeforeRenderHooks func) {
+		this->beforeRenderHooks = func;
+	}
+	
+	void setDirection(glm::vec3 direction) {
+		this->direction = direction;
+	}
+
+	void setCutoff(float cutoff) {
+		this->cutoff = cutoff;
+	}
+
+	void AssignToShader(Shader& shader) override {
+		// 還好目前只有這三種燈型，不然就變成嵌入地獄= =
+
+		if (this->beforeRenderHooks != nullptr)
+			beforeRenderHooks(this);
+
+		shader.setVec3f("spotlight.direction", direction);
+		shader.set1f("spotlight.cutoff", cutoff);
+
+		// point light
+		shader.setVec3f("spotlight.baselight.position", position);
+		shader.set1f("spotlight.baselight.constant", constant);
+		shader.set1f("spotlight.baselight.linear", linear);
+		shader.set1f("spotlight.baselight.quadratic", quadratic);
+		 
+		// base light
+		shader.setVec3f("spotlight.baselight.baselight.color", color);
+		shader.set1f("spotlight.baselight.baselight.ambientIntensity", AmbientIntensity);
+		shader.set1f("spotlight.baselight.baselight.diffuseIntensity", DiffuseIntensity);
+		shader.set1f("spotlight.baselight.baselight.specularIntensity", SpecularIntensity);
+	}
+private:
+	BeforeRenderHooks beforeRenderHooks;
+};

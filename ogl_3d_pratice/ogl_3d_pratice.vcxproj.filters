@@ -13,7 +13,6 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Constants.h" />
     <ClInclude Include="Camera.h">
       <Filter>camera</Filter>
     </ClInclude>

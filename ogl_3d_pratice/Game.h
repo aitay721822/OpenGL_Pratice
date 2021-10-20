@@ -2,6 +2,7 @@
 
 #include "Camera.h"
 #include <vector>
+#include <functional>
 #include "Logger.h"
 #include "shader_loader.h"
 #include "Mesh.h"
@@ -9,8 +10,8 @@
 #include "Model.h"
 #include "Light.h"
 
-typedef void (*CameraMovementCallback)(Camera*, double dt);
-typedef string (*UpdateTitleCallback)();
+typedef function<string()> UpdateTitleCallback;
+typedef function<void(Camera*, double)> CameraMovementCallback;
 
 enum ShaderEnum { SHADER_CORE_PROGRAM = 0, SHADER_SKYBOX = 1 };
 
@@ -47,7 +48,7 @@ private:
 	/* Logger Setting */
 	bool debug_mode = false;
 
-	/* Model, Skybox variable */
+	/* Model, Skybox, Lights(Direction Light, Point Light, Spot Light) variable */
 	std::vector<Shader*> shaders;
 	std::vector<Model*> models;
 	std::vector<Light*> lights;
@@ -63,6 +64,7 @@ private:
 	void initModels();
 	void initPointLights();
 	void initDirectionLights();
+	void initSpotLights();
 	void initLights();
 
 	/* internal update function */
@@ -97,6 +99,8 @@ public:
 	void CameraProcessKeyboard(CameraDirection direction, float deltaTime);
 	void CameraProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
 	void CameraProcessMouseScroll(float yoffset);
+	
+	glm::vec3 CameraGetPosition();
 
 	double getFPS();
 
