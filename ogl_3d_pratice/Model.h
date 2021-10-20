@@ -171,14 +171,14 @@ private:
 
 		// load mtl file 
 		material->Get(AI_MATKEY_COLOR_AMBIENT, color);
-		mat.Ka = glm::vec4(color.r, color.g, color.b, 1.0);
+		mat.Ka = glm::vec3(color.r, color.g, color.b);
 		material->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-		mat.Kd = glm::vec4(color.r, color.g, color.b, 1.0);
+		mat.Kd = glm::vec3(color.r, color.g, color.b);
 		material->Get(AI_MATKEY_COLOR_SPECULAR, color);
-		mat.Ks = glm::vec4(color.r, color.g, color.b, 1.0);
+		mat.Ks = glm::vec3(color.r, color.g, color.b);
 		float shininess;
 		material->Get(AI_MATKEY_SHININESS, shininess);
-		mat.Shininess = shininess;
+		mat.Intensity = shininess;
 
 		vector<Texture> diffuseMaps = this->loadMaterialTextures(
 			material,

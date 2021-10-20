@@ -7,8 +7,10 @@
 #include "Mesh.h"
 #include "Skybox.h"
 #include "Model.h"
+#include "Light.h"
 
 typedef void (*CameraMovementCallback)(Camera*, double dt);
+typedef string (*UpdateTitleCallback)();
 
 enum ShaderEnum { SHADER_CORE_PROGRAM = 0, SHADER_SKYBOX = 1 };
 
@@ -45,9 +47,10 @@ private:
 	/* Logger Setting */
 	bool debug_mode = false;
 
-	/* Model, Texture, Material, Model variable */
+	/* Model, Skybox variable */
 	std::vector<Shader*> shaders;
 	std::vector<Model*> models;
+	std::vector<Light*> lights;
 	Skybox* skybox;
 
 	/* Init Functions */
@@ -58,6 +61,13 @@ private:
 	void initWorldMatrix();
 	void initShaders();
 	void initModels();
+	void initPointLights();
+	void initDirectionLights();
+	void initLights();
+
+	/* internal update function */
+	void updateFPS();
+	UpdateTitleCallback updateTitleCallback;
 
 	/* Default Callbacks */
 	static void DefaultFrameBufferResizeCallback(GLFWwindow* window, int w, int h) {
@@ -81,13 +91,15 @@ public:
 	void setKeyboardCallback(GLFWkeyfun func);
 	void setScrollCallback(GLFWscrollfun func);
 	void setFrameBufferResizeCallback(GLFWframebuffersizefun func);
+	void setUpdateTitleCallback(UpdateTitleCallback func);
 
 	// expose camera function for some callback...
 	void CameraProcessKeyboard(CameraDirection direction, float deltaTime);
 	void CameraProcessMouseMovement(float xoffset, float yoffset, bool constrainPitch = true);
 	void CameraProcessMouseScroll(float yoffset);
 
-	void updateFPS();
+	double getFPS();
+
 	void input();
 	void update();
 	void render();

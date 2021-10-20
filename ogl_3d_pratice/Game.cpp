@@ -29,6 +29,7 @@ Game::Game(const char* title,
 	this->initWorldMatrix();
 	this->initShaders();
 	this->initModels();
+	this->initLights();
 }
 
 Game::~Game() {
@@ -41,6 +42,10 @@ Game::~Game() {
 
 	for (auto& model : models) {
 		delete model;
+	}
+
+	for (auto& light : lights) {
+		delete light;
 	}
 
 	delete skybox;
@@ -83,6 +88,11 @@ void Game::setFrameBufferResizeCallback(GLFWframebuffersizefun func) {
 void Game::setCameraMovementCallback(CameraMovementCallback func) {
 	if (func == nullptr) return;
 	this->cameraMoveCallback = func;
+}
+
+void Game::setUpdateTitleCallback(UpdateTitleCallback func) {
+	if (func == nullptr) return;
+	this->updateTitleCallback = func;
 }
 
 void Game::input() {
@@ -149,7 +159,7 @@ void Game::initWorldMatrix() {
 void Game::initShaders() {
 	// TODO: pass shader source by constructor
 	//this->shaders.push_back(new Shader("./shaders/model.loading.vs", "./shaders/model.loading.frag"));
-	this->shaders.push_back(new Shader("./shaders/model.loading.vs", "./shaders/model.loading.frag"));
+	this->shaders.push_back(new Shader("./shaders/model.core.vs", "./shaders/model.core.frag"));
 	this->shaders.push_back(new Shader("./shaders/skybox.vs", "./shaders/skybox.frag"));
 }
 
@@ -174,6 +184,7 @@ void Game::render() {
 
 	ViewMatrix = camera->GetViewMatrix();
 	shaders[SHADER_CORE_PROGRAM]->setMat4fv("view", ViewMatrix);
+	shaders[SHADER_CORE_PROGRAM]->setVec3f("cameraPosition", camera->Position);
 
 	glfwGetFramebufferSize(this->window, &this->frameBufferWidth, &this->frameBufferHeight);
 	GLfloat aspect = (GLfloat)this->frameBufferWidth / (GLfloat)this->frameBufferHeight;
@@ -184,6 +195,11 @@ void Game::render() {
 	ModelMatrix = glm::translate(this->ModelMatrix, glm::vec3(0.0f, -1.75f, 0.0f));
 	ModelMatrix = glm::scale(this->ModelMatrix, glm::vec3(0.2f, 0.2f, 0.2f));
 	shaders[SHADER_CORE_PROGRAM]->setMat4fv("model", ModelMatrix);
+
+	// render lights
+	for (auto& pt : this->lights) {
+		pt->AssignToShader(*shaders[SHADER_CORE_PROGRAM]);
+	}
 
 	// render model
 	for (auto& model : models) {
@@ -206,7 +222,10 @@ void Game::render() {
 }
 
 void Game::update() {
-	this->updateFPS();
+	updateFPS();
+	if (this->updateTitleCallback != nullptr) {
+		glfwSetWindowTitle(this->window, updateTitleCallback().c_str());
+	}
 	this->input();
 }
 
@@ -220,4 +239,21 @@ void Game::CameraProcessMouseMovement(float xoffset, float yoffset, bool constra
 
 void Game::CameraProcessMouseScroll(float yoffset) {
 	this->camera->ProcessMouseScroll(yoffset);
+}
+
+double Game::getFPS() {
+	return 1.0 / this->deltaTime;
+}
+
+void Game::initLights() {
+	this->initDirectionLights();
+	this->initPointLights();
+}
+
+void Game::initPointLights()  {
+	this->lights.push_back(new PointLight(glm::vec3(0.f, 10.f, 0.f), glm::vec3(1.f, 0.0f, 0.f), 0.5f));
+}
+
+void Game::initDirectionLights() {
+	this->lights.push_back(new DirectionLight(glm::vec3(0.f, 10.f, 50.f), 0.8f, 0.8f, 0.8f));
 }

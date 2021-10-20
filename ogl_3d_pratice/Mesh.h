@@ -30,13 +30,13 @@ struct Texture {
 
 struct Material {
 	//材質顏色光照
-	glm::vec4 Ka;
+	glm::vec3 Ka;
 	//漫反射
-	glm::vec4 Kd;
+	glm::vec3 Kd;
 	//鏡反射
-	glm::vec4 Ks;
+	glm::vec3 Ks;
 	
-	float Shininess;
+	float Intensity;
 };
 
 
@@ -87,14 +87,15 @@ public:
 			}
 
 			number = ss.str();
-			glUniform1i(glGetUniformLocation(
-					shader.program, 
-					(name + number).c_str()
-				), 
-				i
-			);
+			string id = "material." + name + number;
+			shader.set1i(id, i, false);
 			glBindTexture(GL_TEXTURE_2D, this->textures[i].Id);
 		}
+		// lights
+		shader.setVec3f("material.ambient", mats.Ka, false);
+		shader.setVec3f("material.diffuse", mats.Kd, false);
+		shader.setVec3f("material.specular", mats.Ks, false);
+
 		// draw mesh
 		glBindVertexArray(this->VAO);
 		glBindBufferRange(GL_UNIFORM_BUFFER, 0, uniformBlockIndex, 0, sizeof(Material));

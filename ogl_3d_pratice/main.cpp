@@ -1,8 +1,8 @@
 #include "Game.h"
 
 Game game(
-	"OpenGL tutorial",
-	1280, 720,
+	"OpenGL",
+	1600, 900,
 	4, 2,
 	false
 );
@@ -72,12 +72,24 @@ static void scroll_input(GLFWwindow* window, double xpos, double ypos) {
 }
 #pragma endregion
 
+static string update_title() {
+	double fps = game.getFPS();
+	if (fps > 0.0) {
+		char title[20];
+		sprintf_s(title, "FPS: %.2lf", fps);
+		return string(title);
+	}
+	return "Oops. title is give you up. but rick astley never gonna give you up";
+}
+
 int main() {
 	game.setKeyboardCallback(key_input);
 	game.setCameraMovementCallback(CameraMovement);
 	game.setMouseCallback(mouse_input);
 	game.setScrollCallback(scroll_input);
+	game.setUpdateTitleCallback(update_title);
 	while (!game.getWindowShouldClose()) {
+		// TODO: Add more callback/hooks
 		game.update();
 		game.render();
 	}
