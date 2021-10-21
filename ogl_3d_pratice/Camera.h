@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include "Logger.h"
 
 enum class CameraDirection
 {
@@ -46,5 +47,7 @@ public:
 	void ProcessMouseScroll(float yoffset);
 
 private:
+	Logger *logger = new Logger("Camera", true);
+
 	void updateCameraVectors();
 };

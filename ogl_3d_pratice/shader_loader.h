@@ -28,6 +28,8 @@ public:
     void setMat3fv(const std::string& name, glm::mat3 value, GLboolean transpose = GL_FALSE, bool shaderAutoDisable = true);
     void setMat4fv(const std::string& name, glm::mat4 value, GLboolean transpose = GL_FALSE, bool shaderAutoDisable = true);
 
+    void showGLSLUniforms();
+
 private:
 
     Logger* logger = new Logger("Shader", config_debug);

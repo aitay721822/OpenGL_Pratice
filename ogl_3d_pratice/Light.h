@@ -26,7 +26,7 @@ public:
 	}
 	~Light() {}
 
-	virtual void AssignToShader(Shader& shader) = 0;
+	virtual void AssignToShader(Shader& shader, int index = 0) = 0;
 };
 
 // 定向光源
@@ -43,7 +43,7 @@ public:
 		this->direction = direction;
 	}
 	
-	void AssignToShader(Shader& shader) override {
+	void AssignToShader(Shader& shader, int index = 0) override {
 		shader.setVec3f("dirLight.direction", direction);
 		shader.setVec3f("dirLight.baselight.color", color);
 		shader.set1f("dirLight.baselight.ambientIntensity", AmbientIntensity);
@@ -85,21 +85,22 @@ public:
 		this->beforeRenderHooks = fn;
 	}
 
-	void AssignToShader(Shader& shader) override {
+	void AssignToShader(Shader& shader, int index = 0) override {
 		
 		if (beforeRenderHooks != nullptr) 
 			beforeRenderHooks(this);
 
-		shader.setVec3f("pointlight.position", position);
+		
+		shader.setVec3f("mPointLights[" + to_string(index) + "].position", position);
 
-		shader.setVec3f("pointlight.baselight.color", color);
-		shader.set1f("pointlight.baselight.ambientIntensity", AmbientIntensity);
-		shader.set1f("pointlight.baselight.diffuseIntensity", DiffuseIntensity);
-		shader.set1f("pointlight.baselight.specularIntensity", SpecularIntensity);
+		shader.setVec3f("mPointLights[" + to_string(index) + "].baselight.color", color);
+		shader.set1f("mPointLights[" + to_string(index) + "].baselight.ambientIntensity", AmbientIntensity);
+		shader.set1f("mPointLights[" + to_string(index) + "].baselight.diffuseIntensity", DiffuseIntensity);
+		shader.set1f("mPointLights[" + to_string(index) + "].baselight.specularIntensity", SpecularIntensity);
 
-		shader.set1f("pointlight.constant", constant);
-		shader.set1f("pointlight.linear", linear);
-		shader.set1f("pointlight.quadratic", quadratic);
+		shader.set1f("mPointLights[" + to_string(index) + "].constant", constant);
+		shader.set1f("mPointLights[" + to_string(index) + "].linear", linear);
+		shader.set1f("mPointLights[" + to_string(index) + "].quadratic", quadratic);
 	}
 private:
 	BeforeRenderHooks beforeRenderHooks; // Usually executed before rendering lights
@@ -142,26 +143,26 @@ public:
 		this->cutoff = cutoff;
 	}
 
-	void AssignToShader(Shader& shader) override {
+	void AssignToShader(Shader& shader, int index = 0) override {
 		// 還好目前只有這三種燈型，不然就變成嵌入地獄= =
 
 		if (this->beforeRenderHooks != nullptr)
 			beforeRenderHooks(this);
 
-		shader.setVec3f("spotlight.direction", direction);
-		shader.set1f("spotlight.cutoff", cutoff);
+		shader.setVec3f("mSpotLights[" + to_string(index) + "].direction", direction);
+		shader.set1f("mSpotLights[" + to_string(index) + "].cutoff", cutoff);
 
 		// point light
-		shader.setVec3f("spotlight.baselight.position", position);
-		shader.set1f("spotlight.baselight.constant", constant);
-		shader.set1f("spotlight.baselight.linear", linear);
-		shader.set1f("spotlight.baselight.quadratic", quadratic);
+		shader.setVec3f("mSpotLights[" + to_string(index) + "].baselight.position", position);
+		shader.set1f("mSpotLights[" + to_string(index) + "].baselight.constant", constant);
+		shader.set1f("mSpotLights[" + to_string(index) + "].baselight.linear", linear);
+		shader.set1f("mSpotLights[" + to_string(index) + "].baselight.quadratic", quadratic);
 		 
 		// base light
-		shader.setVec3f("spotlight.baselight.baselight.color", color);
-		shader.set1f("spotlight.baselight.baselight.ambientIntensity", AmbientIntensity);
-		shader.set1f("spotlight.baselight.baselight.diffuseIntensity", DiffuseIntensity);
-		shader.set1f("spotlight.baselight.baselight.specularIntensity", SpecularIntensity);
+		shader.setVec3f("mSpotLights[" + to_string(index) + "].baselight.baselight.color", color);
+		shader.set1f("mSpotLights[" + to_string(index) + "].baselight.baselight.ambientIntensity", AmbientIntensity);
+		shader.set1f("mSpotLights[" + to_string(index) + "].baselight.baselight.diffuseIntensity", DiffuseIntensity);
+		shader.set1f("mSpotLights[" + to_string(index) + "].baselight.baselight.specularIntensity", SpecularIntensity);
 	}
 private:
 	BeforeRenderHooks beforeRenderHooks;

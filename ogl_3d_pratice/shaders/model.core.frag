@@ -1,11 +1,16 @@
 #version 420
 
+// const variable
+const int MAX_POINT_LIGHTS = 2;
+const int MAX_SPOT_LIGHTS = 2;
+
+// TODO: texture_diffuse array
 struct Material {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
      
-    sampler2D texture_diffuse;
+    sampler2D texture_diffuse1;
     // sampler2D texture_specular;
 };
 
@@ -40,17 +45,23 @@ struct SpotLight {
     float cutoff;
 };
 
+// in var
 in vec3 Normal;
 in vec3 Position;
 in vec2 TexCoords;
 
+// out var
 out vec4 color;
 
-uniform DirectionalLight dirLight;
+// uniform (readonly)
 uniform Material material;
-uniform PointLight pointlight;
-uniform SpotLight spotlight;
+uniform DirectionalLight dirLight;
+uniform int numPointLights;
+uniform int numSpotLights;
+uniform PointLight mPointLights[MAX_POINT_LIGHTS];
+uniform SpotLight mSpotLights[MAX_SPOT_LIGHTS];
 uniform vec3 cameraPosition;
+
 
 vec4 calcLightInternal(BaseLight light, vec3 lightDir, vec3 normal) {
     vec4 ambientColor = vec4(light.color, 1.f) * light.ambientIntensity;
@@ -104,8 +115,16 @@ vec4 calcSpotLight(SpotLight s, vec3 normal) {
 void main(){ 
     vec3 normal = normalize(Normal);
     vec4 dirLight = calcDirectionalLight(normal);
-    vec4 ptLight = calcPointLight(pointlight, normal);
-    vec4 spotlight = calcSpotLight(spotlight, normal);
-    //color = texture(material.texture_diffuse, TexCoords) * (spotlight);
-    color = texture(material.texture_diffuse, TexCoords) * (dirLight + ptLight + spotlight);
+    
+    vec4 ptLight = vec4(0.f);
+    for (int i = 0; i < min(numPointLights, MAX_POINT_LIGHTS); i++) {
+        ptLight += calcPointLight(mPointLights[i], normal);
+    }
+
+    vec4 spotlight = vec4(0.f);
+    for (int i = 0; i < min(numSpotLights, MAX_SPOT_LIGHTS); i++) {
+        spotlight += calcSpotLight(mSpotLights[i], normal);
+    }
+
+    color = texture(material.texture_diffuse1, TexCoords) * (dirLight + ptLight + spotlight);
 }

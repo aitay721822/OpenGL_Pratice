@@ -71,4 +71,6 @@ void Camera::updateCameraVectors()
 	glm::quat aroundX = glm::angleAxis(glm::radians(UpAngle), glm::vec3(1, 0, 0));
 
 	Orientation = aroundY * aroundX;
+
+	logger->Debug("x: %f, y: %f, z: %f", Orientation.x, Orientation.y, Orientation.z);
 }

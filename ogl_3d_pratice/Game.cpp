@@ -44,7 +44,15 @@ Game::~Game() {
 		delete model;
 	}
 
-	for (auto& light : lights) {
+	for (auto& light : dirLights) {
+		delete light;
+	}
+
+	for (auto& light : pointLights) {
+		delete light;
+	}
+
+	for (auto& light : spotLights) {
 		delete light;
 	}
 
@@ -161,6 +169,8 @@ void Game::initShaders() {
 	//this->shaders.push_back(new Shader("./shaders/model.loading.vs", "./shaders/model.loading.frag"));
 	this->shaders.push_back(new Shader("./shaders/model.core.vs", "./shaders/model.core.frag"));
 	this->shaders.push_back(new Shader("./shaders/skybox.vs", "./shaders/skybox.frag"));
+
+	//shaders[SHADER_CORE_PROGRAM]->showGLSLUniforms();
 }
 
 void Game::initModels() {
@@ -197,9 +207,14 @@ void Game::render() {
 	shaders[SHADER_CORE_PROGRAM]->setMat4fv("model", ModelMatrix);
 
 	// render lights
-	for (auto& pt : this->lights) {
-		pt->AssignToShader(*shaders[SHADER_CORE_PROGRAM]);
-	}
+	shaders[SHADER_CORE_PROGRAM]->set1i("numPointLights", pointLights.size());
+	shaders[SHADER_CORE_PROGRAM]->set1i("numSpotLights", spotLights.size());
+	for (int i = 0; i < dirLights.size(); i++)
+		dirLights[i]->AssignToShader(*shaders[SHADER_CORE_PROGRAM]);
+	for (int i = 0; i < pointLights.size(); i++)
+		pointLights[i]->AssignToShader(*shaders[SHADER_CORE_PROGRAM], i);
+	for (int i = 0; i < spotLights.size(); i++)
+		spotLights[i]->AssignToShader(*shaders[SHADER_CORE_PROGRAM], i);
 
 	// render model
 	for (auto& model : models) {
@@ -252,20 +267,22 @@ void Game::initLights() {
 }
 
 void Game::initDirectionLights() {
-	this->lights.push_back(new DirectionLight(glm::vec3(0.f, 10.f, 50.f), 0.8f, 0.8f, 0.8f));
+	this->dirLights.push_back(new DirectionLight(glm::vec3(0.f, 10.f, 50.f), 0.2f, 0.2f, 0.8f));
 }
 
 void Game::initPointLights() {
 	//PointLight* pt = new PointLight(glm::vec3(0.f, 10.f, 0.f), glm::vec3(1.f, 0.0f, 0.f), 0.5f);
 	PointLight* pt = new PointLight(
-		camera->Position, 
+		glm::vec3(0.0f, 10.f, 0.f), 
 		glm::vec3(1.f, 0.0f, 0.f), 
 		1.f
 	);
-	pt->setBeforeRenderHooks([this](PointLight* it) {
-		it->setPosition(this->CameraGetPosition());
-	});
-	this->lights.push_back(pt);
+
+	//pt->setBeforeRenderHooks([this](PointLight* it) {
+	//	it->setPosition(this->CameraGetPosition());
+	//});
+
+	this->pointLights.push_back(pt);
 }
 
 void Game::initSpotLights() {
@@ -277,11 +294,11 @@ void Game::initSpotLights() {
 		0.5f
 	);
 	
-	//sp->setBeforeRenderHooks([this](SpotLight *it) {
-	//	it->setPosition(this->CameraGetPosition());
-	//});
+	sp->setBeforeRenderHooks([this](SpotLight *it) {
+		it->setPosition(this->CameraGetPosition());
+	});
 
-	this->lights.push_back(sp);
+	this->spotLights.push_back(sp);
 } 
 
 glm::vec3 Game::CameraGetPosition() {

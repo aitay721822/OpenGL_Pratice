@@ -51,7 +51,9 @@ private:
 	/* Model, Skybox, Lights(Direction Light, Point Light, Spot Light) variable */
 	std::vector<Shader*> shaders;
 	std::vector<Model*> models;
-	std::vector<Light*> lights;
+	std::vector<DirectionLight*> dirLights;
+	std::vector<PointLight*> pointLights;
+	std::vector<SpotLight*> spotLights;
 	Skybox* skybox;
 
 	/* Init Functions */

@@ -84,9 +84,10 @@ void Shader::link_shader_program(GLuint& vertexShader, GLuint& fragmentShader, G
 
 GLint Shader::findUniformLocation(const std::string& name) {
     GLint res = glGetUniformLocation(this->program, name.c_str());
-    //if (res < 0) {
-    //    logger->Debug("cannot found '%s' location", name.c_str());
-    //}
+    // using showGLSLUniform instead
+    // if (res < 0) {
+    //     logger->Debug("cannot found '%s' location", name.c_str());
+    // }
     return res;
 }
 
@@ -131,4 +132,26 @@ void Shader::setMat4fv(const std::string& name, glm::mat4 value, GLboolean trans
     if (shaderAutoDisable) this->Use();
     glUniformMatrix4fv(findUniformLocation(name), 1, transpose, glm::value_ptr(value));
     if (shaderAutoDisable) this->Unuse();
+}
+
+void Shader::showGLSLUniforms() {
+    GLint i;
+    GLint count;
+
+    GLint size;
+    GLenum type;
+
+    const GLsizei bufSize = 32;
+    GLchar name[bufSize];
+    GLsizei length;
+
+    glGetProgramiv(program, GL_ACTIVE_UNIFORMS, &count);
+    logger->Debug("Active Uniforms: %d", count);
+
+    for (i = 0; i < count; i++)
+    {
+        glGetActiveUniform(program, (GLuint)i, bufSize, &length, &size, &type, name);
+
+        logger->Debug("Uniform #%d Type: %u Name: %s", i, type, name);
+    }
 }
