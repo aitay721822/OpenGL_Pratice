@@ -6,13 +6,21 @@ x64/*.*
 Debug/
 Debug/*.*
 
-# ignore /ogl_3d_pratice/x64
-ogl_3d_pratice/x64/
-ogl_3d_pratice/x64/*.*
+# ignore /GameCore/x64
+GameCore/x64/
+GameCore/x64/*.*
 
-# ignore /ogl_3d_pratice/Debug
-ogl_3d_pratice/Debug/
-ogl_3d_pratice/Debug/*.*
+# ignore /GameCore/Debug
+GameCore/Debug/
+GameCore/Debug/*.*
+
+# ignore /GameCoreTests/x64
+GameCoreTests/x64/
+GameCoreTests/x64/*.*
+
+# ignore /GameCoreTests/Debug
+GameCoreTests/Debug/
+GameCoreTests/Debug/*.*
 
 .git/*.*
 .git/
@@ -20,3 +28,5 @@ ogl_3d_pratice/Debug/*.*
 .vs/*.*
 .vs/
 
+packages/
+packages/*.*

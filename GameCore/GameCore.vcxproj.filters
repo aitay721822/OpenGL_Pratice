@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="shader_loader.cpp">
+      <Filter>core\shader</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>game</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="PerspectiveCamera.h">
+      <Filter>core\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>core\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="shader_loader.h">
+      <Filter>core\shader</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>game</Filter>
+    </ClInclude>
+    <ClInclude Include="Light.h">
+      <Filter>core\lights</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionalLight.h">
+      <Filter>core\lights</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLight.h">
+      <Filter>core\lights</Filter>
+    </ClInclude>
+    <ClInclude Include="SpotLight.h">
+      <Filter>core\lights</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>core\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="vector_helper.h">
+      <Filter>core\math</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix_helper.h">
+      <Filter>core\math</Filter>
+    </ClInclude>
+    <ClInclude Include="Object3D.h">
+      <Filter>core\base</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectType.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="OrthographicCamera.h">
+      <Filter>core\camera</Filter>
+    </ClInclude>
+    <ClInclude Include="AmbientLight.h">
+      <Filter>core\lights</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>core\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>core\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Primitive.h">
+      <Filter>core\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
+      <Filter>core\objects</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>core\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureType.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture2D.h">
+      <Filter>core\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureCube.h">
+      <Filter>core\texture</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>core\base</Filter>
+    </ClInclude>
+    <ClInclude Include="Material.h">
+      <Filter>core\material</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialType.h">
+      <Filter>core</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="game">
+      <UniqueIdentifier>{5401bd8e-2866-4634-9143-f7a1dc7ecfc3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{021c7a39-2ab6-4c11-af04-37bebd4b9fdf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\math">
+      <UniqueIdentifier>{4d5e3b8d-7025-4ebb-9ef1-d3089d90f6fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\base">
+      <UniqueIdentifier>{0d6dfcd2-8635-4ae7-aec2-d7dea39c3789}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\camera">
+      <UniqueIdentifier>{ea5055b4-4c99-400e-8e7f-6bce6144a753}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\texture">
+      <UniqueIdentifier>{cb95f024-69ef-4963-a432-9a04b9c77625}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\objects">
+      <UniqueIdentifier>{7f277df6-9c8a-4b7a-a8a2-7e03cda0cb4f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\lights">
+      <UniqueIdentifier>{512c358e-d544-4f86-974d-2eb5c877d49b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\render">
+      <UniqueIdentifier>{29a47892-dda1-4bba-ab83-d422a5f85c22}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\shader">
+      <UniqueIdentifier>{257d3255-dbd2-47ac-8f2e-198343ad7986}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\utils">
+      <UniqueIdentifier>{c6b18ddb-77d0-4dae-9676-a5bbb3bfe062}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\material">
+      <UniqueIdentifier>{7785fdfb-5fb1-4c40-90b8-491dc50f3179}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Object3D.tests.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="base">
+      <UniqueIdentifier>{aa4f83d2-3200-4c46-b0f0-049d40d15da0}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
