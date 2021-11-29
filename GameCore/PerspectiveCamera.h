@@ -1,11 +1,9 @@
 #pragma once
 
-#include <iostream>
-#include <glm/glm.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include "Logger.h"
 #include "Camera.h"
+
+using namespace std;
+using namespace glm;
 
 namespace GameCore {
 	/* http://www.bobatkins.com/photography/technical/field_of_view.html */

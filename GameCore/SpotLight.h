@@ -1,8 +1,9 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include "shader_loader.h"
 #include "PointLight.h"
+
+using namespace std;
+using namespace glm;
 
 // »E¥ú·½
 namespace GameCore {
@@ -18,7 +19,8 @@ namespace GameCore {
 			float intensity = 1.f,
 			float constant = 1.f,
 			float linear = 0.09f,
-			float quadratic = 0.032f) : PointLight(ambientColor, diffuseColor, specularColor, intensity, constant, linear, quadratic) {
+			float quadratic = 0.032f,
+			float cutoff = 0.5f) : PointLight(ambientColor, diffuseColor, specularColor, intensity, constant, linear, quadratic) {
 
 			this->type = ObjectType::SpotLight;
 
@@ -41,9 +43,8 @@ namespace GameCore {
 
 		~SpotLight() {}
 
-		void setDirection(vec3 target) {
-			vec3 dir = position - target;
-			this->direction = normalize(dir);
+		void setDirection(vec3 direction) {
+			this->direction = normalize(direction);
 		}
 	};
 }

@@ -1,8 +1,9 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include "shader_loader.h"
 #include "Light.h"
+
+using namespace std;
+using namespace glm;
 
 // ÂI¥ú·½
 namespace GameCore {

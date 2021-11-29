@@ -1,11 +1,9 @@
 #pragma once
 
-#include <iostream>
-#include <glm/glm.hpp>
-#include <glm/gtx/quaternion.hpp>
-#include <glm/gtc/quaternion.hpp>
-#include "Logger.h"
 #include "Camera.h"
+
+using namespace std;
+using namespace glm;
 
 namespace GameCore {
 	class OrthographicCamera : public Camera {

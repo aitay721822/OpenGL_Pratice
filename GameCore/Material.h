@@ -1,10 +1,19 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include <string>
 #include <vector>
+#include <string>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+
+#include <assimp/Importer.hpp>
 #include <assimp/material.h>
 
+#include <GL/glew.h>
+#include <gl/GL.h>
+
+#include "Logger.h"
 #include "MaterialType.h"
 #include "Texture.h"
 #include "Texture2D.h"
@@ -33,19 +42,19 @@ namespace GameCore {
 
 		// ambient
 		vec3 ambientColor;
-		vector<Texture> ambientMaps;
+		vector<Texture*> ambientMaps;
 
 		// diffuse
 		vec3 diffuseColor;
-		vector<Texture> diffuseMaps;
+		vector<Texture*> diffuseMaps;
 
 		// specular
 		vec3 specularColor;
-		vector<Texture> specularMaps;
+		vector<Texture*> specularMaps;
 
 		// normal map
-		vector<Texture> normalMaps;
-		vector<Texture> heightMaps;
+		vector<Texture*> normalMaps;
+		vector<Texture*> heightMaps;
 
 		// shininess of a phong-shaded material
 		float shininess;
@@ -80,8 +89,8 @@ namespace GameCore {
 			loadTextures(mat, aiTextureType_HEIGHT, heightMaps);
 		}
 
-		void loadTextures(aiMaterial* mat, aiTextureType type, vector<Texture>& out) {
-			vector<Texture> loaded;
+		void loadTextures(aiMaterial* mat, aiTextureType type, vector<Texture*>& out) {
+			vector<Texture*> loaded;
 			for (GLuint i = 0; i < mat->GetTextureCount(type); i++) {
 				aiString path;
 				mat->GetTexture(type, i, &path);
@@ -92,7 +101,7 @@ namespace GameCore {
 				GLboolean skip = false;
 				for (GLuint j = 0; j < loaded.size(); j++) {
 					// assume texture is Texture2D
-					if (strcmp(path.C_Str(), loaded[j].imagePaths[0].data()) == 0) {
+					if (strcmp(path.C_Str(), loaded[j]->imagePaths[0].data()) == 0) {
 						out.push_back(loaded[j]);
 						skip = true;
 						break;
@@ -100,7 +109,7 @@ namespace GameCore {
 				}
 						
 				if (!skip) {
-					Texture2D texture({ path.C_Str() });
+					Texture2D* texture = new Texture2D({ path.C_Str() });
 					loaded.push_back(texture);
 					out.push_back(texture);
 				}

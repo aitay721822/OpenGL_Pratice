@@ -1,50 +1,43 @@
 #pragma once
 
-#include <vector>
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <map>
 #include <string>
-#include <SOIL2/SOIL2.h>
-// assimp
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
+#include <vector>
+
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 #include <assimp/postprocess.h>
 
-// glm
-#include <glm/glm.hpp>
-#include <glm/gtc/type_ptr.hpp>
-
-// glew
-#include <GL/glew.h>
-
-// glfw
-#include <GLFW/glfw3.h>
-#include "Mesh.h"
-#include "Logger.h"
-
-#include <filesystem>
 #include "Light.h"
-#include "AmbientLight.h"
 #include "DirectionalLight.h"
+#include "AmbientLight.h"
+#include "PointLight.h"
+#include "SpotLight.h"
+
+#include "Object3DNode.h"
 
 using namespace std;
+using namespace glm;
 
 namespace GameCore {
 	class Model {
 	public:
-		Model(const GLchar* path) : Model(string(path)) {}
+		Model(const char* path) : Model(string(path)) {}
 
-		Model(string path) {
+		Model(std::string path) {
 			this->loadModel(path);
 		}
+
+		Object3DNode* getNode() { return this->rootNode; }
+		vector<Light*> getLights() { return this->lights; }
 	private:
 		Logger logger = Logger("3D Model");
-		vector<Mesh> meshes;
-		vector<Light> lights;
 
-		void loadModel(string path) {
+		Object3DNode* rootNode;
+		vector<Light*> lights;
+
+		void loadModel(std::string path) {
 			Assimp::Importer imp;
 			const aiScene* scene = imp.ReadFile(path,
 				aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
@@ -55,20 +48,53 @@ namespace GameCore {
 			}
 			// process node's
 			// node is a small entities in the scene that have a place and orientation relative to thier parents.
-			// and node can have multiple mesh 
-			this->processNode(scene->mRootNode, scene);
+			// and node can have multiple mesh
+			rootNode = this->processNode(scene->mRootNode, scene);
 			this->processLight(scene);
 		}
 
-		void processNode(aiNode* node, const aiScene* scene) {
-			for (unsigned int i = 0; i < node->mNumMeshes; i++) {
+		mat4 aiMatrix4x4toMat4(aiMatrix4x4 mat) {
+			mat4 res = mat4(
+				mat.a1, mat.a2, mat.a3, mat.a4,
+				mat.b1, mat.b2, mat.b3, mat.b4,
+				mat.c1, mat.c2, mat.c3, mat.c4,
+				mat.d1, mat.d2, mat.d3, mat.d4
+			);
+			return res;
+		}
+
+		vec3 aiColor3DtoVec3(aiColor3D color) {
+			return vec3(
+				color.r,
+				color.g,
+				color.b
+			);
+		}
+
+		vec3 aiVector3toVec3(aiVector3D v) {
+			return vec3(
+				v.x,
+				v.y,
+				v.z
+			);
+		}
+
+		// process recursively
+		Object3DNode* processNode(aiNode* node, const aiScene* scene) {
+			// build a fresh node :)
+			rootNode = new Object3DNode(string(node->mName.C_Str()));
+			rootNode->setWorldMatrix(aiMatrix4x4toMat4(node->mTransformation));
+			// parse current node meshes
+			for (u32 i = 0; i < node->mNumMeshes; i++) {
 				aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-				meshes.push_back(Mesh(mesh, scene));
+				rootNode->addMesh(new Mesh(mesh, scene));
 			}
-			
+			// process children node
 			for (unsigned int i = 0; i < node->mNumChildren; i++) {
-				this->processNode(node->mChildren[i], scene);
+				rootNode->add(this->processNode(node->mChildren[i], scene));
 			}
+			// return node
+			return rootNode;
 		}
 		
 		void processLight(const aiScene* scene) {
@@ -76,24 +102,32 @@ namespace GameCore {
 				for (GLuint i = 0; i < scene->mNumLights; i++) {
 					aiLight* source = scene->mLights[i];
 					if (source->mType == aiLightSource_AMBIENT) {
-						AmbientLight temp = AmbientLight();
-						temp.ambientColor = vec3(source->mColorAmbient.r, source->mColorAmbient.g, source->mColorAmbient.b);
-						temp.specularColor = vec3(source->mColorSpecular.r, source->mColorSpecular.g, source->mColorSpecular.b);
-						temp.diffuseColor = vec3(source->mColorDiffuse.r, source->mColorDiffuse.g, source->mColorDiffuse.b);
-						lights.push_back(temp);
+						lights.push_back(new AmbientLight(
+							aiColor3DtoVec3(source->mColorAmbient),
+							aiColor3DtoVec3(source->mColorDiffuse),
+							aiColor3DtoVec3(source->mColorSpecular)
+						));
 					} else if (source->mType == aiLightSource_DIRECTIONAL) {
-						DirectionalLight temp = DirectionalLight();
-						temp.ambientColor = vec3(source->mColorAmbient.r, source->mColorAmbient.g, source->mColorAmbient.b);
-						temp.specularColor = vec3(source->mColorSpecular.r, source->mColorSpecular.g, source->mColorSpecular.b);
-						temp.diffuseColor = vec3(source->mColorDiffuse.r, source->mColorDiffuse.g, source->mColorDiffuse.b);
-						temp.position = vec3(source->mPosition.x, source->mPosition.y, source->mPosition.z);
-						temp.direction = vec3(source->mDirection.x, source->mDirection.y, source->mDirection.z);
-						temp.updateMatrix();
-
+						DirectionalLight* light = new DirectionalLight(
+							aiColor3DtoVec3(source->mColorAmbient),
+							aiColor3DtoVec3(source->mColorDiffuse),
+							aiColor3DtoVec3(source->mColorSpecular)
+						);
+						light->setPosition(aiVector3toVec3(source->mPosition));
+						light->setDirection(aiVector3toVec3(source->mDirection));
+						lights.push_back(light);
 					} else if (source->mType == aiLightSource_POINT) {
-					
+						lights.push_back( new PointLight(
+							aiColor3DtoVec3(source->mColorAmbient),
+							aiColor3DtoVec3(source->mColorDiffuse),
+							aiColor3DtoVec3(source->mColorSpecular)
+						));
 					} else if (source->mType == aiLightSource_SPOT) {
-
+						lights.push_back(new SpotLight(
+							aiColor3DtoVec3(source->mColorAmbient),
+							aiColor3DtoVec3(source->mColorDiffuse),
+							aiColor3DtoVec3(source->mColorSpecular)
+						));
 					}
 				}
 			}

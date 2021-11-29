@@ -1,14 +1,20 @@
 #pragma once
 
-#include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
-#include <iostream>
-#include "Logger.h"
-#include <GL/glew.h>
+#include <vector>
+#include <string>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
+#include <gl/glew.h>
+
+#include "Logger.h"
+
+using namespace std;
+using namespace glm;
 
 namespace GameCore {
     class Shader {

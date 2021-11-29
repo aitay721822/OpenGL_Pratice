@@ -4,6 +4,9 @@
 #include <stdarg.h>
 #include <ctime>
 
+using namespace std;
+using namespace glm;
+
 namespace GameCore {
 	const bool _default_en_debug_logger = false;
 

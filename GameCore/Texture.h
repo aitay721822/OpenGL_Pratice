@@ -1,11 +1,13 @@
 #pragma once
+
 #include <glm/glm.hpp>
-#include <gl/glew.h>
-#include "Logger.h"
+
+#include <GL/glew.h>
+
 #include "TextureType.h"
 
-using namespace glm;
 using namespace std;
+using namespace glm;
 
 namespace GameCore {
 	static u32 TextureGlobalId = 0;
@@ -55,7 +57,6 @@ namespace GameCore {
 			this->textureId = 0;
 			
 			this->imagePaths = imagePaths;
-			this->load();
 		}
 
 		virtual void load() = 0;

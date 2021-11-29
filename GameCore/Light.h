@@ -1,9 +1,14 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "Object3D.h"
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 #include "ObjectType.h"
-#include "shader_loader.h"
+#include "Object3D.h"
+
+using namespace std;
+using namespace glm;
 
 namespace GameCore {
 	class Light : public Object3D {

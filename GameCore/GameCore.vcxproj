@@ -153,12 +153,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AmbientLight.h" />
+    <ClInclude Include="LightRenderer.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="MaterialType.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="matrix_helper.h" />
+    <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="Object3D.h" />
+    <ClInclude Include="Object3DNode.h" />
     <ClInclude Include="ObjectType.h" />
+    <ClInclude Include="OpenGLRenderer.h" />
     <ClInclude Include="OrthographicCamera.h" />
     <ClInclude Include="PerspectiveCamera.h" />
     <ClInclude Include="DirectionalLight.h" />
@@ -169,8 +173,11 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Primitive.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="shader_loader.h" />
     <ClInclude Include="Skybox.h" />
+    <ClInclude Include="SkyboxRenderer.h" />
     <ClInclude Include="SpotLight.h" />
     <ClInclude Include="Texture.h" />
     <ClInclude Include="Texture2D.h" />

@@ -88,6 +88,27 @@
     <ClInclude Include="MaterialType.h">
       <Filter>core</Filter>
     </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>core\scene</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGLRenderer.h">
+      <Filter>core\render</Filter>
+    </ClInclude>
+    <ClInclude Include="Object3DNode.h">
+      <Filter>core\base</Filter>
+    </ClInclude>
+    <ClInclude Include="SkyboxRenderer.h">
+      <Filter>core\render\object</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>core\render\object</Filter>
+    </ClInclude>
+    <ClInclude Include="LightRenderer.h">
+      <Filter>core\render\object</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshRenderer.h">
+      <Filter>core\render\object</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="game">
@@ -125,6 +146,12 @@
     </Filter>
     <Filter Include="core\material">
       <UniqueIdentifier>{7785fdfb-5fb1-4c40-90b8-491dc50f3179}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\scene">
+      <UniqueIdentifier>{a38b95bb-764b-4d7c-843d-810d8eea35ca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="core\render\object">
+      <UniqueIdentifier>{9a32caf8-8e04-4e84-a91a-03d593da2251}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

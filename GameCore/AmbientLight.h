@@ -1,10 +1,9 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include "Object3D.h"
-#include "ObjectType.h"
-#include "shader_loader.h"
 #include "Light.h"
+
+using namespace std;
+using namespace glm;
 
 namespace GameCore {
 	class AmbientLight : public Light {

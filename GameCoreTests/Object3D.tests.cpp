@@ -39,5 +39,5 @@ TEST(Object3DTest, TestLookAt) {
 	a->lookAt(vec3(0.f, -1.f, 1.f));
 	vec3 rotationRAD = eulerAngles(a->quaternion);
 	vec3 rotationDEG = degrees(rotationRAD);
-	ASSERT_EQ(rotationDEG.x, -45.f);
+	ASSERT_EQ(rotationDEG.x, 45.f);
 }

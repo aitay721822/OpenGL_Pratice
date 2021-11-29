@@ -1,15 +1,13 @@
 #pragma once
 
 #include <filesystem>
-#include <glm/glm.hpp>
-#include <gl/glew.h>
-#include "Logger.h"
-#include "TextureType.h"
-#include "Texture.h"
+
 #include <SOIL2/SOIL2.h>
 
-using namespace glm;
+#include "Texture.h"
+
 using namespace std;
+using namespace glm;
 
 namespace GameCore {
 

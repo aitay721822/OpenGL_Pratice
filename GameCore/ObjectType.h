@@ -2,6 +2,7 @@
 
 namespace GameCore {
 
+	/* Contains only inherited Object3D classes */
 	enum class ObjectType {
 		// base on all 3d objects
 		Object3D,
@@ -16,7 +17,10 @@ namespace GameCore {
 		PointLight,
 		SpotLight,
 		// Mesh type
-		Mesh
+		Mesh,
+		// Primitive
+		Primitive,
+		Skybox,
 	};
 
 	static bool isObject3D(ObjectType type) {

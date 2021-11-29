@@ -1,22 +1,23 @@
 #pragma once
 
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <iostream>
 #include <vector>
 
-#include <assimp/Importer.hpp>
-#include <GLFW/glfw3.h>
-#include <GL/glew.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 
-#include "shader_loader.h"
-#include "Object3D.h"
+#include <assimp/mesh.h>
+#include <assimp/scene.h>
+
+#include "Logger.h"
 #include "ObjectType.h"
-#include "Vertex.h"
 #include "Material.h"
+#include "Vertex.h"
+
+#include "Object3D.h"
 
 using namespace std;
+using namespace glm;
 
 namespace GameCore {
 	// TODO: implement geometry class
@@ -27,17 +28,17 @@ namespace GameCore {
 		// 3d attributes
 		vector<Vertex> vertices;
 		vector<GLuint> indices;
-		Material material;
+		Material* material;
 
-		string name;
-		ObjectType type;
+		Mesh(aiMesh* mesh, const aiScene* scene) {
+			this->name = "";
+			this->type = ObjectType::Mesh;
 
-		Mesh(const aiMesh* mesh, const aiScene* scene) {
 			// process vertices
 			for (GLuint i = 0; i < mesh->mNumVertices; i++) {
 				vec3 position, normals, tangent, bitangent;
-				vector<vec2> texCoords;
-				vector<vec4> colors;
+				vec2 texCoords;
+				vec4 colors;
 
 				if (mesh->mVertices) {
 					position = vec3(mesh->mVertices[i].x,
@@ -49,29 +50,30 @@ namespace GameCore {
 						mesh->mNormals[i].y,
 						mesh->mNormals[i].z);
 				}
-				if (mesh->mTangents) {
-					tangent = vec3(mesh->mTangents[i].x,
-						mesh->mTangents[i].y,
-						mesh->mTangents[i].z);
+				if (mesh->mTextureCoords[0]) {
+					texCoords = vec2(
+						mesh->mTextureCoords[0][i].x,
+						mesh->mTextureCoords[0][i].y
+					);
+					if (mesh->mTangents) {
+						tangent = vec3(mesh->mTangents[i].x,
+							mesh->mTangents[i].y,
+							mesh->mTangents[i].z);
+					}
+					if (mesh->mBitangents) {
+						bitangent = vec3(mesh->mBitangents[i].x,
+							mesh->mBitangents[i].y,
+							mesh->mBitangents[i].z);
+					}
+				} else {
+					texCoords = vec2(0.f, 0.f);
 				}
-				if (mesh->mBitangents) {
-					bitangent = vec3(mesh->mBitangents[i].x,
-						mesh->mBitangents[i].y,
-						mesh->mBitangents[i].z);
-				}
-
-				for (unsigned int i = 0; i < mesh->GetNumUVChannels(); i++) {
-					texCoords.push_back(vec2(
-						mesh->mTextureCoords[i]->x, 
-						mesh->mTextureCoords[i]->y));
-				}
-
-				for (unsigned int i = 0; i < mesh->GetNumColorChannels(); i++) {
-					colors.push_back(vec4(
-						mesh->mColors[i]->r,
-						mesh->mColors[i]->g,
-						mesh->mColors[i]->b,
-						mesh->mColors[i]->a));
+				if (mesh->mColors[0]) {
+					colors = vec4(
+						mesh->mColors[0]->r,
+						mesh->mColors[0]->g,
+						mesh->mColors[0]->b,
+						mesh->mColors[0]->a);
 				}
 				vertices.push_back(Vertex(position, normals, texCoords, colors, tangent, bitangent));
 			}
@@ -84,7 +86,7 @@ namespace GameCore {
 			}
 			// material
 			aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
-			material = Material(mat);
+			this->material = new Material(mat);
 		}
 	};
 }

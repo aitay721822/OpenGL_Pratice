@@ -1,10 +1,9 @@
 #pragma once
 
-#include <glm/glm.hpp>
-#include "Object3D.h"
-#include "ObjectType.h"
-#include "shader_loader.h"
 #include "Light.h"
+
+using namespace std;
+using namespace glm;
 
 namespace GameCore {
 	class DirectionalLight : public Light {
@@ -22,9 +21,13 @@ namespace GameCore {
 
 		DirectionalLight(vec3 color = vec3(1.0f), float intensity = 1.f) : DirectionalLight(color, color, color, intensity) {}
 
-		void setDirection(vec3 target) {
-			vec3 dir = position - target;
-			this->direction = normalize(dir);
+		void setPosition(vec3 position) {
+			this->position = position;
+			updateMatrix();
+		}
+		
+		void setDirection(vec3 direction) {
+			this->direction = normalize(direction);
 		}
 	};
 }
