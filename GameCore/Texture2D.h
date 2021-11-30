@@ -28,17 +28,20 @@ namespace GameCore {
 
 		void load() override {
 			if (imagePaths.size() == 0) {
-				logger.Err("image path is empty!");
+				logger.Err("Texture2D.load: image path is empty!");
 				return;
 			}
 
-			// check filepath is exists, texture2D only take first path
+			// texture2D only take first path
 			filesystem::path path(imagePaths[0]);
-			if (!filesystem::exists(path)) {
-				logger.Err("image not found: %s", path.c_str());
-			}
 			// get full path
 			filesystem::path fp = filesystem::absolute(path);
+			// check exists
+			if (!filesystem::exists(fp)) {
+				logger.Err("Texture2D.load: image not found: %s", path.c_str());
+				return;
+			}
+			
 			string fullpath = fp.string();
 			// generate new texture id
 			GLuint tId;
@@ -64,6 +67,7 @@ namespace GameCore {
 			SOIL_free_image_data(image);
 
 			this->textureId = tId;
+			logger.Info("Texture2D.load: Texture Loaded | Texture Id: %d", this->textureId);
 		}
 	};
 }

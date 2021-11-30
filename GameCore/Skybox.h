@@ -14,6 +14,8 @@ namespace GameCore {
 		}
 	public:
 		Skybox(const vector<string> imgPaths) : Primitive() {
+			this->type = ObjectType::Skybox;
+
 			const vector<Vertex> vertices = {
 				// position, normal, texCoords, color, tangent, bitangent
 				Vertex(vec3(-1.0f,  1.0f,  1.0f), vec3(0.f, 0.f,  1.f), vec2(0.f, 1.f), vec4(1.f), vec3(0.f), vec3(0.f)), // front left top

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -26,16 +27,37 @@ namespace GameCore {
 		Model(const char* path) : Model(string(path)) {}
 
 		Model(std::string path) {
+			this->path = tryGetAbsolutePath(path);
 			this->loadModel(path);
 		}
 
+		~Model() {
+			delete rootNode;
+			for (auto& light : lights) {
+				delete light;
+			}
+		}
+
+		
 		Object3DNode* getNode() { return this->rootNode; }
 		vector<Light*> getLights() { return this->lights; }
 	private:
 		Logger logger = Logger("3D Model");
 
+		string path;
 		Object3DNode* rootNode;
 		vector<Light*> lights;
+
+		string tryGetAbsolutePath(string path) {
+			// get fullpath
+			filesystem::path fp = filesystem::absolute(path);
+			// check exists
+			if (!filesystem::exists(fp)) {
+				logger.Err("Model.tryGetAbsolutePath: can't resolve path because file not exists");
+				return path;
+			}
+			return fp.string();
+		}
 
 		void loadModel(std::string path) {
 			Assimp::Importer imp;
@@ -43,8 +65,8 @@ namespace GameCore {
 				aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 			if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
-				logger.Err("Unable to load Model Error: %s", imp.GetErrorString());
-				return;
+				logger.Err("Model.loadModel: Unable to load Model Error: %s", imp.GetErrorString());
+				return ;
 			}
 			// process node's
 			// node is a small entities in the scene that have a place and orientation relative to thier parents.
@@ -82,19 +104,19 @@ namespace GameCore {
 		// process recursively
 		Object3DNode* processNode(aiNode* node, const aiScene* scene) {
 			// build a fresh node :)
-			rootNode = new Object3DNode(string(node->mName.C_Str()));
-			rootNode->setWorldMatrix(aiMatrix4x4toMat4(node->mTransformation));
+			Object3DNode* objNode = new Object3DNode(string(node->mName.C_Str()));
+			objNode->setWorldMatrix(aiMatrix4x4toMat4(node->mTransformation));
 			// parse current node meshes
 			for (u32 i = 0; i < node->mNumMeshes; i++) {
 				aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-				rootNode->addMesh(new Mesh(mesh, scene));
+				objNode->addMesh(new Mesh(mesh, scene, this->path));
 			}
 			// process children node
 			for (unsigned int i = 0; i < node->mNumChildren; i++) {
-				rootNode->add(this->processNode(node->mChildren[i], scene));
+				objNode->add(this->processNode(node->mChildren[i], scene));
 			}
 			// return node
-			return rootNode;
+			return objNode;
 		}
 		
 		void processLight(const aiScene* scene) {

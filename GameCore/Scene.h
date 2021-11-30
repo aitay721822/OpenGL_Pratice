@@ -19,6 +19,11 @@ namespace GameCore {
 			this->autoUpdate = true;
 		}
 
+		~Scene() {
+			for (auto& light : this->lights)
+				delete light;
+		}
+
 		Object3D* getBackground() {
 			return this->background;
 		}

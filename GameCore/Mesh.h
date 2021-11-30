@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <vector>
 
 #include <glm/glm.hpp>
@@ -30,7 +31,7 @@ namespace GameCore {
 		vector<GLuint> indices;
 		Material* material;
 
-		Mesh(aiMesh* mesh, const aiScene* scene) {
+		Mesh(aiMesh* mesh, const aiScene* scene, string path) {
 			this->name = "";
 			this->type = ObjectType::Mesh;
 
@@ -84,9 +85,15 @@ namespace GameCore {
 					indices.push_back(face.mIndices[j]);
 				}
 			}
+			// process path
+			filesystem::path p(path);
 			// material
 			aiMaterial* mat = scene->mMaterials[mesh->mMaterialIndex];
-			this->material = new Material(mat);
+			this->material = new Material(mat, p.parent_path().string());
+		}
+
+		~Mesh() {
+			delete this->material;
 		}
 	};
 }

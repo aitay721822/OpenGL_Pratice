@@ -75,7 +75,7 @@ namespace GameCore {
 		vec3 getUpVector() { return this->up; }
 		mat4 getMatrix() { return this->matrix; }
 		mat4 getWorldMatrix() {
-			if (!matrixWorldNeedsUpdate) logger.Info("world matrix not update.");
+			if (matrixWorldNeedsUpdate) logger.Info("Object3D(%d).getWorldMatrix: world matrix not update.", this->id);
 			return this->matrixWorld;
 		}
 		bool getWorldMatrixNeedsUpdate() { return this->matrixWorldNeedsUpdate; }

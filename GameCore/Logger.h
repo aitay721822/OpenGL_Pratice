@@ -8,7 +8,7 @@ using namespace std;
 using namespace glm;
 
 namespace GameCore {
-	const bool _default_en_debug_logger = false;
+	const bool _default_en_debug_logger = true;
 
 	class Logger {
 	public:
@@ -72,8 +72,12 @@ namespace GameCore {
 
 		std::string fmt(std::string f, va_list args) {
 			char* buf = new char[1024];
-			vsnprintf(buf, 1024, f.c_str(), args);
-			return std::string(buf);
+
+			vsnprintf_s(buf, 1024, 1024, f.c_str(), args);
+
+			std::string res = std::string(buf);
+			delete[] buf;
+			return res;
 		}
 
 		std::string currentTime() {

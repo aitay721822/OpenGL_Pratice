@@ -66,7 +66,7 @@ namespace GameCore {
 
 		void initGLFWWindow(const char* title, bool resizable) {
 			if (!glfwInit()) {
-				logger.Fatal("Initialize GLFW error");
+				logger.Fatal("OpenGLRenderer.initGLFWWindow: Initialize GLFW error");
 			}
 			// 啟用多重採樣 (4x MSAA)
 			// document: https://learnopengl.com/Advanced-OpenGL/Anti-Aliasing
@@ -78,7 +78,7 @@ namespace GameCore {
 			window = glfwCreateWindow(this->width, this->height, title, NULL, NULL);
 			if (!window) {
 				glfwTerminate();
-				logger.Fatal("Creating GLFW Window Error");
+				logger.Fatal("OpenGLRenderer.initGLFWWindow: Creating GLFW Window Error");
 			}
 			glfwGetFramebufferSize(this->window, &this->frameBufferWidth, &this->frameBufferHeight);
 			glfwSetFramebufferSizeCallback(this->window, this->DefaultFrameBufferResizeCallback);
@@ -88,7 +88,7 @@ namespace GameCore {
 		void initGLEW() {
 			glewExperimental = GL_TRUE;
 			if (glewInit() != GLEW_OK) {
-				logger.Fatal("Initialize GLEW error");
+				logger.Fatal("OpenGLRenderer.initGLEW: Initialize GLEW error");
 			}
 		}
 		
@@ -106,7 +106,7 @@ namespace GameCore {
 		void setupLightView(Scene* scene) {
 			Shader* shader = getShader(ShaderType::ShaderCore);
 			if (shader == nullptr) {
-				logger.Err("Shader: ShaderCore is missing");
+				logger.Err("OpenGLRenderer.setupLightView: ShaderCore is missing");
 				return;
 			}
 
@@ -155,8 +155,8 @@ namespace GameCore {
 		void renderScene(Scene* scene, Camera* camera) {
 			// render background
 			Object3D* background = scene->getBackground();
-			if (background != nullptr) {
-				logger.Info("background object is nullptr, skip rendering!");
+			if (background == nullptr) {
+				logger.Info("OpenGLRenderer.renderScene: background object is nullptr, skip rendering!");
 			}
 			else {
 				renderBackground(background, camera);
@@ -181,7 +181,7 @@ namespace GameCore {
 		void renderMesh(Mesh* mesh, Camera* camera) {
 			Shader* shader = getShader(ShaderType::ShaderCore);
 			if (shader == nullptr) {
-				logger.Err("Shader: ShaderCore is missing");
+				logger.Err("OpenGLRenderer.renderMesh: ShaderCore is missing");
 				return;
 			}
 			u32 id = mesh->getId();
@@ -212,23 +212,12 @@ namespace GameCore {
 					r->render(shader);
 				}
 				else {
-					logger.Info("Shader: ShaderSkybox is missing.");
+					logger.Info("OpenGLRenderer.renderBackground: ShaderSkybox is missing.");
 				}
 			}
 			else {
-				logger.Info("background type : %s, not support rendering this as background", background->getObjectType());
+				logger.Info("OpenGLRenderer.renderBackground: object id : %d, not support rendering this as background", background->getId());
 			}
-		}
-
-		void renderView(Camera* camera) {
-			Shader* shader = getShader(ShaderType::ShaderCore);
-			if (shader == nullptr) {
-				logger.Err("Shader: ShaderCore is missing");
-				return;
-			}
-			shader->setVec3f("cameraPosition", camera->getPosition());
-			shader->setMat4fv("viewMatrix", camera->getWorldMatrix());
-			shader->setMat4fv("projectionMatrix", camera->getProjectionMatrix());
 		}
 
 		void updateFPS() {
@@ -249,7 +238,7 @@ namespace GameCore {
 			this->frameBufferHeight = this->width;
 			this->frameBufferHeight = this->height;
 
-			this->camera = new PerspectiveCamera();
+ 			this->camera = new PerspectiveCamera(45.f, (float)this->width / (float)this->height);
 
 			initGLFWWindow(title, resizable);
 			initGLEW();
@@ -312,7 +301,7 @@ namespace GameCore {
 
 		bool addShader(ShaderType type, string vtxPath, string fragPath) {
 			if (shaders.find(type) != shaders.end()) {
-				logger.Err("shader name is already exists: %s", type);
+				logger.Err("OpenGLRenderer.addShader: shader name is already exists: %s", type);
 				return false;
 			}
 			
@@ -326,7 +315,7 @@ namespace GameCore {
 
 		Shader* getShader(ShaderType key) {
 			if (shaders.find(key) == shaders.end()) {
-				logger.Err("shader not exists: %s", key);
+				logger.Err("OpenGLRenderer.getShader: shader not exists: %s", key);
 				return nullptr;
 			}
 			return shaders[key];
@@ -334,7 +323,7 @@ namespace GameCore {
 		
 		void render(Scene* scene) {
 			if (scene == nullptr || camera == nullptr) { 
-				logger.Err("Scene or Camera is incorrectly set to nullptr.");
+				logger.Err("OpenGLRenderer.render: Scene or Camera is incorrectly set to nullptr.");
 				return; 
 			}
 
@@ -346,7 +335,6 @@ namespace GameCore {
 			}
 			// The camera's world matrix is set to 1.f by default.
 			camera->updateWorldMatrix();
-			renderView(camera);
 
 			scene->onBeforeRender();
 			renderScene(scene, camera);

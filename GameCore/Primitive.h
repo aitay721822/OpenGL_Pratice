@@ -31,7 +31,6 @@ namespace GameCore {
 		}
 		~Primitive() {
 			delete texture;
-		
 		}
 
 		Texture* getTexture() {

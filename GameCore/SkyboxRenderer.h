@@ -63,8 +63,7 @@ namespace GameCore {
 		}
 
 		~SkyboxRenderer() {
-			// delete skybox ref
-			delete this->skyboxRef;
+			this->skyboxRef = nullptr;
 		}
 
 		void render(Shader* shader) {
@@ -90,7 +89,11 @@ namespace GameCore {
 		}
 
 		void update(Shader* shader, Camera* camera) {
-
+			// remove translation
+			mat4 view = mat4(mat3(camera->getWorldMatrixInverse()));
+			
+			shader->setMat4fv("view", view);
+			shader->setMat4fv("projection", camera->getProjectionMatrix());
 		}
 	};
 

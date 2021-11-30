@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Model.h"
 #include "OpenGLRenderer.h"
 
@@ -48,20 +50,20 @@ static void key_input(GLFWwindow* window, int key, int scancode, int action, int
 
 #pragma region Mouse_Callback
 bool firstMouse = true;
-GLfloat lastX, lastY;
+float lastX, lastY;
 static void mouse_input(GLFWwindow* window, double xpos, double ypos) {
 	if (firstMouse)
 	{
-		lastX = (GLfloat)xpos;
-		lastY = (GLfloat)ypos;
+		lastX = (float)xpos;
+		lastY = (float)ypos;
 		firstMouse = false;
 	}
 
-	GLfloat xoffset = (GLfloat)xpos - lastX;
-	GLfloat yoffset = lastY - (GLfloat)ypos;  // Reversed since y-coordinates go from bottom to left
+	float xoffset = lastX - (float)xpos;
+	float yoffset = lastY - (float)ypos;
 
-	lastX = (GLfloat)xpos;
-	lastY = (GLfloat)ypos;
+	lastX = (float)xpos;
+	lastY = (float)ypos;
 
 	game.ProcessMouseMovement(xoffset, yoffset);
 }
@@ -88,13 +90,19 @@ void loadScene(string modelPath) {
 	};
 	scene->setBackground(new Skybox(faces));
 
-	Model* model = new Model(modelPath);
-	scene->add(model->getNode());
+	if (!modelPath.empty()){
+		Model* model = new Model(modelPath);
+		scene->add(model->getNode());
+	}
+
+	scene->setLights(new AmbientLight(vec3(1.f), 0.15f));
 }
 
 int main() {
-	loadScene("./models/HololiveEN_3D/GawrGura/GawrGura.obj");
+	loadScene( "./models/HololiveEN_3D/GawrGura/GawrGura.obj" );
 
+	game.addShader(ShaderType::ShaderSkybox, "./shaders/skybox.vs", "./shaders/skybox.frag");
+	game.addShader(ShaderType::ShaderCore, "./shaders/model.core.vs", "./shaders/model.core.frag");
 	game.setKeyboardCallback(key_input);
 	game.setCameraMovementCallback(CameraMovement);
 	game.setMouseCallback(mouse_input);

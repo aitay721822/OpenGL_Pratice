@@ -25,6 +25,10 @@ namespace GameCore {
 			this->id = id;
 		}
 		
+		~AmbientLightRenderer() {
+			this->ref = nullptr;
+		}
+		
 		void render(Shader* shader) {
 			ref->onBeforeRender();
 			shader->setVec3f("amLight[" + to_string(id) + "].amColor", ref->ambientColor);
@@ -47,6 +51,10 @@ namespace GameCore {
 		DirectionalLightRenderer(DirectionalLight* ref, u32 id = 0) {
 			this->ref = ref;
 			this->id = id;
+		}
+
+		~DirectionalLightRenderer() {
+			this->ref = nullptr;
 		}
 
 		void render(Shader* shader) {
@@ -72,6 +80,10 @@ namespace GameCore {
 		PointLightRenderer(PointLight* ref, u32 id = 0) {
 			this->ref = ref;
 			this->id = id;
+		}
+
+		~PointLightRenderer() {
+			this->ref = nullptr;
 		}
 
 		void render(Shader* shader) {
@@ -100,6 +112,10 @@ namespace GameCore {
 		SpotLightRenderer(SpotLight* ref, u32 id = 0) {
 			this->ref = ref;
 			this->id = id;
+		}
+
+		~SpotLightRenderer() {
+			this->ref = nullptr;
 		}
 
 		void render(Shader* shader) {

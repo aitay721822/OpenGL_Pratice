@@ -66,6 +66,7 @@ namespace GameCore {
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, this->wrapR);
 			glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 			this->textureId = tId;
+			logger.Info("TextureCube.load: Texture Loaded | Texture Id: %d", this->textureId);
 		}
 	};
 }

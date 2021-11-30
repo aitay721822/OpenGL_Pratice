@@ -56,19 +56,34 @@ namespace GameCore {
 		vector<Texture*> normalMaps;
 		vector<Texture*> heightMaps;
 
-		// shininess of a phong-shaded material
-		float shininess;
-
-		Material(aiMaterial* mat) {
+		Material(aiMaterial* mat, string directory) {
 			this->id = MaterialGlobalId++;
 			this->name = string(mat->GetName().C_Str());
 			this->type = MaterialType::Material;
 
-			loadMaterial(mat);
+			loadMaterial(mat, directory);
+		}
+
+		~Material() {
+			for (auto& map : ambientMaps) {
+				delete map;
+			}
+			for (auto& map : diffuseMaps) {
+				delete map;
+			}
+			for (auto& map : specularMaps) {
+				delete map;
+			}
+			for (auto& map : normalMaps) {
+				delete map;
+			}
+			for (auto& map : heightMaps) {
+				delete map;
+			}
 		}
 
 
-		void loadMaterial(aiMaterial* mat) {
+		void loadMaterial(aiMaterial* mat, string directory) {
 			// set colors and shininess
 			aiColor3D color;
 			mat->Get(AI_MATKEY_COLOR_AMBIENT, color);
@@ -77,25 +92,24 @@ namespace GameCore {
 			this->diffuseColor = vec3(color.r, color.g, color.b);
 			mat->Get(AI_MATKEY_COLOR_SPECULAR, color);
 			this->specularColor = vec3(color.r, color.g, color.b);
-			float shininess;
-			mat->Get(AI_MATKEY_SHININESS, shininess);
-			this->shininess = shininess;
 
 			// get textures
-			loadTextures(mat, aiTextureType_AMBIENT, ambientMaps);
-			loadTextures(mat, aiTextureType_DIFFUSE, diffuseMaps);
-			loadTextures(mat, aiTextureType_SPECULAR, specularMaps);
-			loadTextures(mat, aiTextureType_NORMALS, normalMaps);
-			loadTextures(mat, aiTextureType_HEIGHT, heightMaps);
+			loadTextures(directory, mat, aiTextureType_AMBIENT, ambientMaps);
+			loadTextures(directory, mat, aiTextureType_DIFFUSE, diffuseMaps);
+			loadTextures(directory, mat, aiTextureType_SPECULAR, specularMaps);
+			loadTextures(directory, mat, aiTextureType_NORMALS, normalMaps);
+			loadTextures(directory, mat, aiTextureType_HEIGHT, heightMaps);
 		}
 
-		void loadTextures(aiMaterial* mat, aiTextureType type, vector<Texture*>& out) {
+		void loadTextures(string directory, aiMaterial* mat, aiTextureType type, vector<Texture*>& out) {
+			filesystem::path dir(directory);
+
 			vector<Texture*> loaded;
 			for (GLuint i = 0; i < mat->GetTextureCount(type); i++) {
 				aiString path;
 				mat->GetTexture(type, i, &path);
 				if (path.length > 0 && path.data[0] == '*') {
-					logger.Info("Has embedded id: %s", path);
+					logger.Info("Material(%d).loadTextures: Has embedded id: %s", this->id, path);
 				}
 			
 				GLboolean skip = false;
@@ -109,7 +123,10 @@ namespace GameCore {
 				}
 						
 				if (!skip) {
-					Texture2D* texture = new Texture2D({ path.C_Str() });
+					filesystem::path dir = filesystem::path(directory);
+					filesystem::path imgPath = filesystem::path(path.C_Str());
+					imgPath = (imgPath.is_absolute()) ? imgPath : dir.append(imgPath.string());
+					Texture2D* texture = new Texture2D({ imgPath.string() });
 					loaded.push_back(texture);
 					out.push_back(texture);
 				}

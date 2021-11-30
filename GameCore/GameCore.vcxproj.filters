@@ -4,9 +4,6 @@
     <ClCompile Include="shader_loader.cpp">
       <Filter>core\shader</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
-      <Filter>game</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -18,9 +15,6 @@
     </ClInclude>
     <ClInclude Include="shader_loader.h">
       <Filter>core\shader</Filter>
-    </ClInclude>
-    <ClInclude Include="Game.h">
-      <Filter>game</Filter>
     </ClInclude>
     <ClInclude Include="Light.h">
       <Filter>core\lights</Filter>
@@ -111,9 +105,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="game">
-      <UniqueIdentifier>{5401bd8e-2866-4634-9143-f7a1dc7ecfc3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="core">
       <UniqueIdentifier>{021c7a39-2ab6-4c11-af04-37bebd4b9fdf}</UniqueIdentifier>
     </Filter>
