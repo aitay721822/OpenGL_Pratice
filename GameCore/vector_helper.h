@@ -20,6 +20,7 @@ namespace GameCore {
 			return res;
 		}
 
+		// q * v * inv(q)
 		static vec3 applyQuaternion(vec3 const& v, quat const& q) {
 			quat result = q * v;
 			quat length = result * inverse(q);

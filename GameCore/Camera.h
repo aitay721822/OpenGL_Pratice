@@ -59,11 +59,11 @@ namespace GameCore {
 
 		void ProcessMouseMovement(float xoffset, float yoffset)
 		{
-			xoffset *= 0.02f;
-			yoffset *= 0.02f;
+			xoffset *= 0.2f;
+			yoffset *= 0.2f;
 
-			this->rotateY(xoffset);
-			this->rotateX(yoffset);
+			this->rotateY(radians(xoffset))->
+				  rotateX(radians(yoffset));
 		}
 
 		// !------ get

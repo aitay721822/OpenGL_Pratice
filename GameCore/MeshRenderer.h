@@ -65,32 +65,32 @@ namespace GameCore {
 			u32 num = 0;
 			for (u32 i = 0; i < material->ambientMaps.size(); i++, num++) {
 				glActiveTexture(GL_TEXTURE0 + num);
-				string id = "material.texture_ambient" + to_string(i);
+				string id = "material.texture_ambient" + to_string(i + 1);
 				shader->set1i(id, num);
 				glBindTexture(GL_TEXTURE_2D, material->ambientMaps[i]->textureId);
 			}
 			for (u32 i = 0; i < material->diffuseMaps.size(); i++, num++) {
 				glActiveTexture(GL_TEXTURE0 + num);
-				string id = "material.texture_diffuse" + to_string(i);
+				string id = "material.texture_diffuse" + to_string(i + 1);
 				shader->set1i(id, num);
 				glBindTexture(GL_TEXTURE_2D, material->diffuseMaps[i]->textureId);
 			}
 			for (u32 i = 0; i < material->specularMaps.size(); i++, num++) {
 				glActiveTexture(GL_TEXTURE0 + num);
-				string id = "material.texture_specular" + to_string(i);
+				string id = "material.texture_specular" + to_string(i + 1);
 				shader->set1i(id, num);
 				glBindTexture(GL_TEXTURE_2D, material->specularMaps[i]->textureId);
 			}
 
 			for (u32 i = 0; i < material->normalMaps.size(); i++, num++) {
 				glActiveTexture(GL_TEXTURE0 + num);
-				string id = "material.texture_normal" + to_string(i);
+				string id = "material.texture_normal" + to_string(i + 1);
 				shader->set1i(id, num);
 				glBindTexture(GL_TEXTURE_2D, material->normalMaps[i]->textureId);
 			}
 			for (u32 i = 0; i < material->heightMaps.size(); i++, num++) {
 				glActiveTexture(GL_TEXTURE0 + num);
-				string id = "material.texture_height" + to_string(i);
+				string id = "material.texture_height" + to_string(i + 1);
 				shader->set1i(id, num);
 				glBindTexture(GL_TEXTURE_2D, material->heightMaps[i]->textureId);
 			}
@@ -106,6 +106,16 @@ namespace GameCore {
 			glDrawElements(GL_TRIANGLES, (GLsizei)ref->indices.size(), GL_UNSIGNED_INT, 0);
 			glBindVertexArray(0);
 			shader->Unuse();
+
+			// unbind
+			// texture unbind
+			for (; num > 0; num--) {
+				glActiveTexture(GL_TEXTURE0 + num);
+				glBindTexture(GL_TEXTURE_2D, 0);
+			}
+			// set defaults
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, 0);
 
 			ref->onAfterRender();
 		}

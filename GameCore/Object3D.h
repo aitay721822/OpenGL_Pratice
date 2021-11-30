@@ -35,6 +35,7 @@ namespace GameCore {
 
 		// 3d properties
 		vec3 position;
+		vec3 rotation;
 		quat quaternion;
 		vec3 scale;
 		vec3 up;
@@ -54,6 +55,7 @@ namespace GameCore {
 
 			this->up = vec3(DefaultUp);
 			this->position = vec3(0.f, 0.f, 0.f);
+			this->rotation = vec3(0.f, 0.f, 0.f);
 			this->quaternion = quat(1.f, 0.f, 0.f, 0.f);
 			this->scale = vec3(1, 1, 1);
 
@@ -70,6 +72,7 @@ namespace GameCore {
 		ObjectType getObjectType() { return this->type; }
 		string getName() { return this->name; }
 		vec3 getPosition() { return this->position; }
+		vec3 getRotation() { return this->rotation; }
 		quat getQuaternion() { return this->quaternion; }
 		vec3 getScale() { return this->scale; }
 		vec3 getUpVector() { return this->up; }
@@ -139,7 +142,6 @@ namespace GameCore {
 			return this->rotateOnAxis(zAxis, angle);
 		}
 
-		// TODO: validate this is correct
 		Object3D* translateOnAxis(vec3 axis, float distance) {
 			vec3 len = Math::applyQuaternion(axis, this->quaternion);
 			position += len * distance;

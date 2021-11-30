@@ -49,7 +49,7 @@ struct SpotLight {
 };
 
 // in var
-in vec3 Normal;
+in vec3 TBN;
 in vec3 Position;
 in vec2 TexCoords;
 
@@ -121,7 +121,8 @@ vec4 calcSpotLight(SpotLight s, vec3 normal) {
 }
 
 void main(){ 
-    vec3 normal = normalize(Normal);
+    vec3 normal = texture(material.texture_normal1, TexCoords).xyz * 2.f - 1.f;
+    normal = normalize(normal);
     
     vec4 materialColor = vec4(material.ambient + material.diffuse + material.specular, 1.f);
 
