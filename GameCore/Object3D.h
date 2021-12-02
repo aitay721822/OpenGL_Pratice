@@ -11,8 +11,6 @@
 #include "matrix_helper.h"
 #include "vector_helper.h"
 
-// three.js is done very well.. just refer its code implementation
-
 using namespace std;
 using namespace glm;
 

@@ -124,7 +124,7 @@ namespace GameCore {
 			shader->setMat4fv("model", ref->getWorldMatrix());
 			shader->setMat4fv("view", camera->getWorldMatrixInverse());
 			shader->setMat4fv("projection", camera->getProjectionMatrix());
-			shader->setVec3f("cameraPosition", camera->getPosition());
+			shader->setVec3f("viewPos", camera->getPosition());
 		}
 	};
 

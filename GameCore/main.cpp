@@ -79,7 +79,29 @@ static string update_title() {
 	return "Oops. title is give you up. but rick astley never gonna give you up";
 }
 
-void loadScene(string modelPath) {
+//double current = 0, last = 0, interval = 1;
+//void rotateMesh(Object3DNode* node, bool check = false) {
+//	current = glfwGetTime();
+//	if (current - last < interval && !check) {
+//		return;
+//	}
+//	
+//	vector<Object3DNode*> children = node->getChildren();
+//	if (node->getMeshes().size() == 0) {
+//		for (auto& child : children) {
+//			rotateMesh(child, true);
+//		}
+//	}
+//	else {
+//		for (auto& mesh : node->getMeshes()) {
+//			mesh->rotateY(radians(10.f))->rotateX(radians(10.f));
+//		}
+//	}
+//	last = current;
+//}
+
+
+void loadScene() {
 	vector<string> faces = { 
 		"./models/Skybox/right.jpg",
 		"./models/Skybox/left.jpg",
@@ -90,16 +112,31 @@ void loadScene(string modelPath) {
 	};
 	scene->setBackground(new Skybox(faces));
 
-	if (!modelPath.empty()){
-		Model* model = new Model(modelPath);
-		scene->add(model->getNode());
-	}
+	Model* model;
+	// volcano
+	model = new Model("./models/Demo/volcano2_v3/volcano2_v3.obj");
+	scene->add(model->getNode())->rotateY(radians(270.f));
+	// street
+	model = new Model("./models/Demo/street_v2/street_v2.obj");
+	model->getNode()->translateX(42.f)->rotateY(radians(270.f));
+	scene->add(model->getNode());
+	// river3
+	model = new Model("./models/Demo/river3_v2/river3_v2.obj");
+	model->getNode()->translateZ(42.f)->rotateY(radians(270.f));
+	scene->add(model->getNode());
+	// iceland2
+	model = new Model("./models/Demo/ocean_v2/ocean_v2.obj");
+	model->getNode()->translateX(42.f)->translateZ(42.f)->rotateY(radians(270.f));
+	scene->add(model->getNode());
 
-	scene->setLights(new AmbientLight(vec3(1.f), 0.15f));
+	DirectionalLight* light = new DirectionalLight();
+	light->intensity = 1.f;
+	light->setDirection(vec3(-1.f, -1.f, -1.f));
+	scene->setLights(light);
 }
 
 int main() {
-	loadScene( "./models/HololiveEN_3D/GawrGura/GawrGura.obj" );
+	loadScene();
 
 	game.addShader(ShaderType::ShaderSkybox, "./shaders/skybox.vs", "./shaders/skybox.frag");
 	game.addShader(ShaderType::ShaderCore, "./shaders/model.core.vs", "./shaders/model.core.frag");
@@ -110,6 +147,7 @@ int main() {
 	while (!game.getWindowShouldClose()) {
 		game.update();
 		game.render(scene);
+		//rotateMesh(scene);
 	}
 	return 0;
 }

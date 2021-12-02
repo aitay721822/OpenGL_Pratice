@@ -49,7 +49,7 @@ struct SpotLight {
 };
 
 // in var
-in vec3 TBN;
+in vec3 Normal;
 in vec3 Position;
 in vec2 TexCoords;
 
@@ -63,7 +63,7 @@ uniform DirectionalLight dirLight[MAX_DIR_LIGHTS];
 uniform PointLight ptLight[MAX_POINT_LIGHTS];
 uniform SpotLight spLight[MAX_SPOT_LIGHTS];
 
-uniform vec3 cameraPosition;
+uniform vec3 viewPos;
 
 vec4 calcAmbientLight(AmbientLight light) {
     vec4 ambient = vec4(light.amColor, 1.0) * light.intensity;
@@ -73,16 +73,16 @@ vec4 calcAmbientLight(AmbientLight light) {
 }
 
 vec4 calcLightInternal(AmbientLight light, vec3 lightDir, vec3 normal) {
-    vec4 ambientColor = vec4(light.amColor, 1.f) * light.intensity;
+    vec4 ambientColor = vec4(light.amColor * light.intensity, 1.f);
     float diffuseFactor = dot(normal, -lightDir);
     
     vec4 diffuseColor = vec4(0.f);
     vec4 specularColor = vec4(0.f);
 
     if (diffuseFactor > 0) {
-        diffuseColor = vec4(light.diColor  * light.intensity * diffuseFactor, 1.f);
+        diffuseColor = vec4(light.diColor * light.intensity * diffuseFactor, 1.f);
         
-        vec3 viewDir = normalize(cameraPosition - Position);
+        vec3 viewDir = normalize(viewPos - Position);
         vec3 reflectDir = normalize(reflect(lightDir, normal));
         float specularFactor = dot(viewDir, reflectDir);
         if (specularFactor > 0) {
@@ -91,7 +91,8 @@ vec4 calcLightInternal(AmbientLight light, vec3 lightDir, vec3 normal) {
         }
     }
 
-    return ambientColor + diffuseColor + specularColor;
+    // return ambientColor + diffuseColor + specularColor;
+    return diffuseColor + specularColor;
 }
  
 vec4 calcDirectionalLight(DirectionalLight dirLight, vec3 normal) {
@@ -120,11 +121,13 @@ vec4 calcSpotLight(SpotLight s, vec3 normal) {
     }
 }
 
+
+
 void main(){ 
-    vec3 normal = texture(material.texture_normal1, TexCoords).xyz * 2.f - 1.f;
-    normal = normalize(normal);
+    //vec3 normal = texture(material.texture_normal1, TexCoords).rgb * 2.f - 1.f;
+    //normal = normalize(normal);
     
-    vec4 materialColor = vec4(material.ambient + material.diffuse + material.specular, 1.f);
+    //vec4 materialColor = vec4(material.ambient + material.diffuse + material.specular, 1.f);
 
     vec4 ambient = vec4(0.f);
     for (int i = 0; i < MAX_AM_LIGHTS; i++) {
@@ -136,25 +139,25 @@ void main(){
     vec4 direction = vec4(0.f);
     for (int i = 0; i < MAX_DIR_LIGHTS; i++) {
         if (dirLight[i].base.intensity > 0.f) {
-            direction += calcDirectionalLight(dirLight[i], normal);
+            direction += calcDirectionalLight(dirLight[i], Normal);
         }
     }
     
     vec4 point = vec4(0.f);
     for (int i = 0; i < MAX_POINT_LIGHTS; i++) {
         if (ptLight[i].base.intensity > 0) {
-            point += calcPointLight(ptLight[i], normal);
+            point += calcPointLight(ptLight[i], Normal);
         }
     }
 
     vec4 spot = vec4(0.f);
     for (int i = 0; i < MAX_SPOT_LIGHTS; i++) {
         if (spLight[i].base.base.intensity > 0) {
-            spot += calcSpotLight(spLight[i], normal);
+            spot += calcSpotLight(spLight[i], Normal);
         }
     }
 
     vec4 totalLight = ambient + direction + point + spot;
 
-    color = texture(material.texture_diffuse1, TexCoords) * materialColor * totalLight;
+    color = texture(material.texture_diffuse1, TexCoords) * totalLight;
 }

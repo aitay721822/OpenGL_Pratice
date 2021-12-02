@@ -138,6 +138,78 @@ namespace GameCore {
 			return nullptr;
 		}
 
+		Object3DNode* translateX(float distance) {
+			for (auto& mesh : this->meshes) {
+				mesh->translateX(distance);
+			}
+
+			for (auto& child : this->children) {
+				child->translateX(distance);
+			}
+
+			return this;
+		}
+
+		Object3DNode* translateY(float distance) {
+			for (auto& mesh : this->meshes) {
+				mesh->translateY(distance);
+			}
+
+			for (auto& child : this->children) {
+				child->translateY(distance);
+			}
+
+			return this;
+		}
+
+		Object3DNode* translateZ(float distance) {
+			for (auto& mesh : this->meshes) {
+				mesh->translateZ(distance);
+			}
+
+			for (auto& child : this->children) {
+				child->translateZ(distance);
+			}
+
+			return this;
+		}
+
+		Object3DNode* rotateX(float angle) {
+			for (auto& mesh : this->meshes) {
+				mesh->rotateX(angle);
+			}
+
+			for (auto& child : this->children) {
+				child->rotateX(angle);
+			}
+
+			return this;
+		}
+
+		Object3DNode* rotateY(float angle) {
+			for (auto& mesh : this->meshes) {
+				mesh->rotateY(angle);
+			}
+
+			for (auto& child : this->children) {
+				child->rotateY(angle);
+			}
+
+			return this;
+		}
+
+		Object3DNode* rotateZ(float angle) {
+			for (auto& mesh : this->meshes) {
+				mesh->rotateZ(angle);
+			}
+
+			for (auto& child : this->children) {
+				child->rotateZ(angle);
+			}
+
+			return this;
+		}
+
 		//Object3DNode* attach(Object3DNode* obj) {
 		//	updateWorldMatrix(true, false);
 		//	
@@ -193,10 +265,10 @@ namespace GameCore {
 			for (auto& mesh : meshes) {
 				mesh->updateMatrix();					
 				mesh->updateWorldMatrix(this->worldMatrix);
-				// update cchildren's
-				for (auto& child : children) {
-					child->updateWorldMatrix();
-				}
+			}
+			// update children's
+			for (auto& child : children) {
+				child->updateWorldMatrix();
 			}
 		}
 	};
