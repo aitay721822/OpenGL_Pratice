@@ -31,6 +31,11 @@ namespace GameCore {
         {
             logger.Err("File not sucessfully read: %s", e.what());
         }
+        if (vertexCode.size() == 0 || fragmentCode.size() == 0) {
+            logger.Err("File not exists!");
+            return;
+        }
+
         const char* vShaderCode = vertexCode.c_str();
         const char* fShaderCode = fragmentCode.c_str();
         // 2. Compile shaders & link shader to program

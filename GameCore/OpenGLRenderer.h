@@ -180,7 +180,7 @@ namespace GameCore {
 
 		void renderMesh(Mesh* mesh, Camera* camera) {
 			Shader* shader = getShader(ShaderType::ShaderCore);
-			if (shader == nullptr) {
+			if (shader == nullptr || shader->program == 0) {
 				logger.Err("OpenGLRenderer.renderMesh: ShaderCore is missing");
 				return;
 			}
@@ -198,7 +198,7 @@ namespace GameCore {
 		void renderBackground(Object3D* background, Camera* camera) {
 			if (background->getObjectType() == ObjectType::Skybox) {
 				Shader* shader = getShader(ShaderType::ShaderSkybox);
-				if (shader != nullptr) {
+				if (shader != nullptr && shader->program != 0) {
 					u32 id = background->getId();
 					// try to find renderer
 					if (renderer.find(id) == renderer.end()) {

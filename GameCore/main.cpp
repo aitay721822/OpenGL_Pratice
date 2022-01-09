@@ -129,9 +129,10 @@ void loadScene() {
 	model->getNode()->translateX(42.f)->translateZ(42.f)->rotateY(radians(270.f));
 	scene->add(model->getNode());
 
+
 	DirectionalLight* light = new DirectionalLight();
 	light->intensity = 1.f;
-	light->setDirection(vec3(-1.f, -1.f, -1.f));
+	light->setDirection(vec3(1.f, -1.f, 1.f));
 	scene->setLights(light);
 }
 
